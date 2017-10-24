@@ -170,11 +170,11 @@ class GraphQL extends DisplayPluginBase {
       $viewId = $this->view->id();
       $displayId = $this->display['id'];
       $parts = [$viewId, $displayId, 'view', $suffix];
-      return $type ? StringHelper::camelCase($parts) : StringHelper::propCase($parts);
+      return $type ? call_user_func_array([StringHelper::class, 'camelCase'], $parts) : call_user_func_array([StringHelper::class, 'propCase'], $parts);
     }
 
     $parts = array_filter([$queryName, $suffix]);
-    return $type ? StringHelper::camelCase($parts) : StringHelper::propCase($parts);
+    return $type ? call_user_func_array([StringHelper::class, 'camelCase'], $parts) : call_user_func_array([StringHelper::class, 'propCase'], $parts);
   }
 
   /**
