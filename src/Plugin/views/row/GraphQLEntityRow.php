@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\graphql\Plugin\views\row;
+namespace Drupal\graphql_views\Plugin\views\row;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;

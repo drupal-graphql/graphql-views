@@ -5,7 +5,7 @@
  * Contains \Drupal\graphql\Plugin\views\display
  */
 
-namespace Drupal\graphql\Plugin\views\display;
+namespace Drupal\graphql_views\Plugin\views\display;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\graphql\Utility\StringHelper;

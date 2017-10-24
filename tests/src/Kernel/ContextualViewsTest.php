@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\graphql_core\Kernel;
+namespace Drupal\Tests\graphql_views\Kernel;
 
 use Drupal\graphql\GraphQL\Utility\TypeCollector;
 use Drupal\Tests\graphql_core\Kernel\Views\ViewsTestBase;
