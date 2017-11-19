@@ -10,7 +10,7 @@ use Drupal\graphql\Plugin\GraphQL\Types\TypePluginBase;
  * @GraphQLType(
  *   id = "view_row_type",
  *   provider = "views",
- *   deriver = "Drupal\graphql_core\Plugin\Deriver\Types\ViewRowTypeDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\Types\ViewRowTypeDeriver"
  * )
  */
 class ViewRowType extends TypePluginBase {

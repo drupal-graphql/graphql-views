@@ -2,8 +2,7 @@
 
 namespace Drupal\graphql_views\Plugin\Deriver\Fields;
 
-use Drupal\graphql\Utility\StringHelper;
-use Drupal\graphql_core\Plugin\Deriver\ViewDeriverBase;
+use Drupal\graphql_views\Plugin\Deriver\ViewDeriverBase;
 use Drupal\views\Views;
 
 /**
@@ -21,7 +20,7 @@ class ViewResultCountDeriver extends ViewDeriverBase {
       foreach (Views::getApplicableViews('graphql_display') as list($viewId, $displayId)) {
         /** @var \Drupal\views\ViewEntityInterface $view */
         $view = $viewStorage->load($viewId);
-        /** @var \Drupal\graphql\Plugin\views\display\GraphQL $display */
+        /** @var \Drupal\graphql_views\Plugin\views\display\GraphQL $display */
         $display = $this->getViewDisplay($view, $displayId);
         if (!$this->isPaged($display)) {
           continue;

@@ -14,7 +14,7 @@ use Youshido\GraphQL\Execution\ResolveInfo;
  *   secure = true,
  *   multi = true,
  *   provider = "views",
- *   deriver = "Drupal\graphql_core\Plugin\Deriver\Fields\ViewResultListDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\Fields\ViewResultListDeriver"
  * )
  */
 class ViewResultList extends FieldPluginBase {

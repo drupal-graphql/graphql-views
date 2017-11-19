@@ -4,7 +4,7 @@ namespace Drupal\graphql_views\Plugin\Deriver\Fields;
 
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\graphql\Utility\StringHelper;
-use Drupal\graphql_core\Plugin\Deriver\ViewDeriverBase;
+use Drupal\graphql_views\Plugin\Deriver\ViewDeriverBase;
 use Drupal\views\Plugin\views\display\DisplayPluginInterface;
 use Drupal\views\Views;
 
@@ -27,7 +27,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
           continue;
         }
 
-        /** @var \Drupal\graphql\Plugin\views\display\GraphQL $display */
+        /** @var \Drupal\graphql_views\Plugin\views\display\GraphQL $display */
         $display = $this->getViewDisplay($view, $displayId);
 
         $id = implode('-', [$viewId, $displayId, 'view']);
@@ -72,7 +72,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
     if (!empty($arguments)) {
       return [
         'contextualFilter' => [
-          'type' => StringHelper::camelCase([$id, 'contextual', 'filter', 'input']),
+          'type' => StringHelper::camelCase($id, 'contextual', 'filter', 'input'),
           'multi' => FALSE,
           'nullable' => TRUE,
         ],
@@ -108,7 +108,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
         'default' => TRUE,
       ],
       'sortBy' => [
-        'enum_type_name' => StringHelper::camelCase(['sort', 'by', $id, 'enum']),
+        'enum_type_name' => StringHelper::camelCase('sort', 'by', $id, 'enum'),
         'type' => array_map(function($sort) {
           return $sort['expose']['label'];
         }, $sorts),
@@ -135,7 +135,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
 
     return !empty($filters) ? [
       'filter' => [
-        'type' => StringHelper::camelCase([$id, 'filter', 'input']),
+        'type' => StringHelper::camelCase($id, 'filter', 'input'),
         'multi' => FALSE,
         'nullable' => TRUE,
       ],
@@ -189,7 +189,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
       }
       else {
         $types = array_merge($types, array_map(function($bundle) use ($argument) {
-          return StringHelper::camelCase([$argument['entity_type'], $bundle]);
+          return StringHelper::camelCase($argument['entity_type'], $bundle);
         }, array_keys($argument['bundles'])));
       }
     }

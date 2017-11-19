@@ -7,8 +7,8 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
-use Drupal\graphql\Plugin\views\row\GraphQLEntityRow;
-use Drupal\graphql\Plugin\views\row\GraphQLFieldRow;
+use Drupal\graphql_views\Plugin\views\row\GraphQLEntityRow;
+use Drupal\graphql_views\Plugin\views\row\GraphQLFieldRow;
 use Drupal\graphql\Utility\StringHelper;
 use Drupal\views\Plugin\views\display\DisplayPluginInterface;
 use Drupal\views\ViewEntityInterface;
@@ -149,12 +149,12 @@ abstract class ViewDeriverBase extends DeriverBase implements ContainerDeriverIn
    *   The name of the type or NULL if the type could not be derived.
    */
   protected function getRowResolveType(ViewEntityInterface $view, $displayId) {
-    /** @var \Drupal\graphql\Plugin\views\display\GraphQL $display */
+    /** @var \Drupal\graphql_views\Plugin\views\display\GraphQL $display */
     $display = $this->getViewDisplay($view, $displayId);
     $rowPlugin = $display->getPlugin('row');
 
     if ($rowPlugin instanceof GraphQLFieldRow) {
-      return StringHelper::camelCase([$display->getGraphQLRowName()]);
+      return StringHelper::camelCase($display->getGraphQLRowName());
     }
 
     if ($rowPlugin instanceof GraphQLEntityRow) {

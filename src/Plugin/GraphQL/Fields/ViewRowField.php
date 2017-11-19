@@ -13,7 +13,7 @@ use Youshido\GraphQL\Execution\ResolveInfo;
  *   secure = true,
  *   nullable = true,
  *   provider = "views",
- *   deriver = "Drupal\graphql_core\Plugin\Deriver\Fields\ViewRowFieldDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\Fields\ViewRowFieldDeriver"
  * )
  */
 class ViewRowField extends FieldPluginBase {

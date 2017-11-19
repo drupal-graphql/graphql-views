@@ -4,7 +4,7 @@ namespace Drupal\graphql_views\Plugin\Deriver\InputTypes;
 
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\graphql\Utility\StringHelper;
-use Drupal\graphql_core\Plugin\Deriver\ViewDeriverBase;
+use Drupal\graphql_views\Plugin\Deriver\ViewDeriverBase;
 use Drupal\views\Views;
 
 /**
@@ -26,7 +26,7 @@ class ViewFilterInputDeriver extends ViewDeriverBase implements ContainerDeriver
           continue;
         }
 
-        /** @var \Drupal\graphql\Plugin\views\display\GraphQL $display */
+        /** @var \Drupal\graphql_views\Plugin\views\display\GraphQL $display */
         $display = $this->getViewDisplay($view, $displayId);
         $id = implode('_', [$viewId, $displayId, 'view', 'filter', 'input']);
 

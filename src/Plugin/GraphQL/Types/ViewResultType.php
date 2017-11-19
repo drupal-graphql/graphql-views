@@ -10,7 +10,7 @@ use Drupal\graphql\Plugin\GraphQL\Types\TypePluginBase;
  * @GraphQLType(
  *   id = "view_result_type",
  *   provider = "views",
- *   deriver = "Drupal\graphql_core\Plugin\Deriver\Types\ViewResultTypeDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\Types\ViewResultTypeDeriver"
  * )
  */
 class ViewResultType extends TypePluginBase {

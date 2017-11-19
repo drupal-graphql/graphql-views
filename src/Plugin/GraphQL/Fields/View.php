@@ -20,7 +20,7 @@ use Youshido\GraphQL\Execution\ResolveInfo;
  *   multi = true,
  *   parents = {"Root"},
  *   provider = "views",
- *   deriver = "Drupal\graphql_core\Plugin\Deriver\Fields\ViewDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\Fields\ViewDeriver"
  * )
  */
 class View extends FieldPluginBase implements ContainerFactoryPluginInterface {

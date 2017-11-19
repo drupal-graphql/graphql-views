@@ -10,7 +10,7 @@ use Drupal\graphql\Plugin\GraphQL\InputTypes\InputTypePluginBase;
  * @GraphQLInputType(
  *   id = "view_filter_input",
  *   provider = "views",
- *   deriver = "Drupal\graphql_core\Plugin\Deriver\InputTypes\ViewFilterInputDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\InputTypes\ViewFilterInputDeriver"
  * )
  */
 class ViewFilterInput extends InputTypePluginBase {
