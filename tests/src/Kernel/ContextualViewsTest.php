@@ -35,7 +35,7 @@ class ContextualViewsTest extends ViewsTestBase {
     /** @var \Drupal\graphql_test\Plugin\GraphQL\Schemas\TestSchema $schema */
     $schema = \Drupal::service('plugin.manager.graphql.schema')->createInstance('test');
     $this->schema = $schema->getSchema();
-    $this->types = TypeCollector::collectTypes($this->schema));
+    $this->types = TypeCollector::collectTypes($this->schema);
   }
 
   /**
