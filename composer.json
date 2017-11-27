@@ -4,8 +4,5 @@
   "description": "Exposes your Drupal Views data model through a GraphQL schema.",
   "homepage": "http://drupal.org/project/graphql_views",
   "license": "GPL-2.0+",
-  "require": {
-    "youshido/graphql": "~1.5"
-  },
   "minimum-stability": "dev"
 }
