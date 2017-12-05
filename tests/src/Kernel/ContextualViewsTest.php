@@ -137,7 +137,7 @@ class ContextualViewsTest extends ViewsTestBase {
   protected function getFields($type) {
     return $type === 'Root'
       ? $this->schema->getQueryType()->getFields()
-      : $this->types[$type]->getConfig()->get('fields');
+      : $this->types[$type]->getConfig()->getFields();
   }
 
 }
