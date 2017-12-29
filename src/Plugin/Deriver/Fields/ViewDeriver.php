@@ -120,7 +120,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
   /**
    * Helper function to return the filter argument if applicable.
    *
-   * @param \Drupal\views\Plugin\views\display\DisplayPluginInterface $display
+   * @param \Drupal\graphql_views\Plugin\views\display\GraphQL $display
    *   The display plugin.
    * @param $id
    *   The plugin derivative id.
@@ -135,7 +135,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
 
     return !empty($filters) ? [
       'filter' => [
-        'type' => StringHelper::camelCase($id, 'filter', 'input'),
+        'type' => $display->getGraphQLFilterInputName(),
         'multi' => FALSE,
         'nullable' => TRUE,
       ],
