@@ -101,7 +101,6 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   protected function getCacheDependencies($result, $value, array $args) {
-    $result = reset($result);
     return [$result['cache']];
   }
 
