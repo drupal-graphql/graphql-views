@@ -44,7 +44,6 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
           'name' => $display->getGraphQLQueryName(),
           'type' => $display->getGraphQLResultName(),
           'parents' => $types,
-          'multi' => FALSE,
           'arguments' => $arguments,
           'view' => $viewId,
           'display' => $displayId,
@@ -73,8 +72,6 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
       return [
         'contextualFilter' => [
           'type' => StringHelper::camelCase($id, 'contextual', 'filter', 'input'),
-          'multi' => FALSE,
-          'nullable' => TRUE,
         ],
       ];
     }
@@ -94,25 +91,13 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
    *   The sort arguments if any exposed sorts are available.
    */
   protected function getSortArguments(DisplayPluginInterface $display, $id) {
-    $sorts = array_filter($display->getOption('sorts') ?: [], function($sort) {
-      return $sort['exposed'];
-    });
-
-    return !empty($sorts) ? [
+    return $display->getOption('sorts') ? [
       'sortDirection' => [
-        'enum_type_name' => 'ViewsSortDirectionEnum',
-        'type' => [
-          'ASC' => 'Ascending',
-          'DESC' => 'Descending',
-        ],
-        'default' => TRUE,
+        'type' => 'ViewSortDirection',
+        'default' => 'ASC',
       ],
       'sortBy' => [
-        'enum_type_name' => StringHelper::camelCase('sort', 'by', $id, 'enum'),
-        'type' => array_map(function($sort) {
-          return $sort['expose']['label'];
-        }, $sorts),
-        'nullable' => TRUE,
+        'type' => StringHelper::camelCase($id, 'sort', 'by'),
       ],
     ] : [];
   }
@@ -136,8 +121,6 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
     return !empty($filters) ? [
       'filter' => [
         'type' => $display->getGraphQLFilterInputName(),
-        'multi' => FALSE,
-        'nullable' => TRUE,
       ],
     ] : [];
   }

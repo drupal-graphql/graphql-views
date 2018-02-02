@@ -11,7 +11,6 @@ use Youshido\GraphQL\Execution\ResolveInfo;
  * @GraphQLField(
  *   id = "view_row_field",
  *   secure = true,
- *   nullable = true,
  *   provider = "views",
  *   deriver = "Drupal\graphql_views\Plugin\Deriver\Fields\ViewRowFieldDeriver"
  * )
