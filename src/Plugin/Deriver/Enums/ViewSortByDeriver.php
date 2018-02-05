@@ -1,15 +1,12 @@
 <?php
 
-namespace Drupal\graphql_views\Plugin\Deriver\Fields;
+namespace Drupal\graphql_views\Plugin\Deriver\Enums;
 
 use Drupal\graphql\Utility\StringHelper;
 use Drupal\graphql_views\Plugin\Deriver\ViewDeriverBase;
 use Drupal\views\Views;
 
-/**
- * Derive fields from configured views.
- */
-class ViewResultListDeriver extends ViewDeriverBase {
+class ViewSortByDeriver extends ViewDeriverBase {
 
   /**
    * {@inheritdoc}
@@ -27,17 +24,21 @@ class ViewResultListDeriver extends ViewDeriverBase {
 
         /** @var \Drupal\graphql_views\Plugin\views\display\GraphQL $display */
         $display = $this->getViewDisplay($view, $displayId);
+        $sorts = array_map(function ($sort) {
+          return [
+            'name' => $sort['id'],
+            'value' => $sort['id'],
+            'description' => $sort['expose']['label'],
+          ];
+        }, array_filter($display->getOption('sorts') ?: [], function($sort) {
+          return $sort['exposed'];
+        }));
 
-        $id = implode('-', [$viewId, $displayId, 'result', 'list']);
-        $style = $this->getViewStyle($view, $displayId);
-        $this->derivatives[$id] = [
-          'id' => $id,
-          'type' => StringHelper::listType($type),
-          'parents' => [$display->getGraphQLResultName()],
-          'view' => $viewId,
-          'display' => $displayId,
-          'uses_fields' => $style->usesFields(),
-        ] + $this->getCacheMetadataDefinition($view) + $basePluginDefinition;
+        $id = implode('-', [$viewId, $displayId, 'view']);
+        $this->derivatives["$viewId-$displayId"] = [
+          'name' => StringHelper::camelCase($id, 'sort', 'by'),
+          'values' => $sorts,
+        ] + $basePluginDefinition;
       }
     }
 

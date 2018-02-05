@@ -50,9 +50,7 @@ class ViewFilterInputDeriver extends ViewDeriverBase implements ContainerDeriver
           }
 
           return [
-            'type' => 'String',
-            'nullable' => TRUE,
-            'multi' => $filter['expose']['multiple'],
+            'type' => $filter['expose']['multiple'] ? StringHelper::listType('String') : 'String',
           ];
         }, $filters);
 
@@ -118,15 +116,13 @@ class ViewFilterInputDeriver extends ViewDeriverBase implements ContainerDeriver
       $filter['expose']['multiple'] ? $filterId : $filterId . '_multi',
       'view',
       'filter',
-      'input'
+      'input',
     ]);
 
     $fields = [];
     foreach ($filter['value'] as $fieldKey => $fieldDefaultValue) {
       $fields[$fieldKey] = [
         'type' => 'String',
-        'nullable' => TRUE,
-        'multi' => FALSE,
       ];
     }
 
@@ -139,9 +135,7 @@ class ViewFilterInputDeriver extends ViewDeriverBase implements ContainerDeriver
     $this->derivatives[$id] = $genericInputFilter;
 
     return [
-      'type' => $genericInputFilter['name'],
-      'nullable' => TRUE,
-      'multi' => $filter['expose']['multiple'],
+      'type' => $filter['expose']['multiple'] ? StringHelper::listType($genericInputFilter['name']) : $genericInputFilter['name'],
     ];
   }
 }
