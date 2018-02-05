@@ -105,7 +105,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
   /**
    * Helper function to return the filter argument if applicable.
    *
-   * @param \Drupal\graphql_views\Plugin\views\display\GraphQL $display
+   * @param \Drupal\views\Plugin\views\display\DisplayPluginInterface $display
    *   The display plugin.
    * @param $id
    *   The plugin derivative id.
