@@ -34,11 +34,13 @@ class ViewSortByDeriver extends ViewDeriverBase {
           return $sort['exposed'];
         }));
 
-        $id = implode('-', [$viewId, $displayId, 'view']);
-        $this->derivatives["$viewId-$displayId"] = [
-          'name' => StringHelper::camelCase($id, 'sort', 'by'),
-          'values' => $sorts,
-        ] + $basePluginDefinition;
+        if (!empty($sorts)) {
+          $id = implode('-', [$viewId, $displayId, 'view']);
+          $this->derivatives["$viewId-$displayId"] = [
+            'name' => StringHelper::camelCase($id, 'sort', 'by'),
+            'values' => $sorts,
+          ] + $basePluginDefinition;
+        }
       }
     }
 
