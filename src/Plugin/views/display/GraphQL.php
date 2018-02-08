@@ -132,10 +132,10 @@ class GraphQL extends DisplayPluginBase {
   }
 
   /**
-   * Gets the filter input name..
+   * Gets the filter input name.
    *
    * @return string
-   *   Result name.
+   *   Filter name.
    */
   public function getGraphQLFilterInputName() {
     return $this->getGraphQLName('filter_input', TRUE);
@@ -145,10 +145,20 @@ class GraphQL extends DisplayPluginBase {
    * Gets the contextual filter input name.
    *
    * @return string
-   *   Result name.
+   *   Contextual filter name.
    */
   public function getGraphQLContextualFilterInputName() {
     return $this->getGraphQLName('contextual_filter_input', TRUE);
+  }
+
+  /**
+   * Gets the sort by name.
+   *
+   * @return string
+   *   Sort by name.
+   */
+  public function getGraphQLSortByName() {
+    return $this->getGraphQLName('sort_by', TRUE);
   }
 
   /**

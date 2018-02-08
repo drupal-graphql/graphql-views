@@ -37,7 +37,7 @@ class ViewSortByDeriver extends ViewDeriverBase {
         if (!empty($sorts)) {
           $id = implode('-', [$viewId, $displayId, 'view']);
           $this->derivatives["$viewId-$displayId"] = [
-            'name' => StringHelper::camelCase($id, 'sort', 'by'),
+            'name' => $display->getGraphQLSortByName(),
             'values' => $sorts,
           ] + $basePluginDefinition;
         }

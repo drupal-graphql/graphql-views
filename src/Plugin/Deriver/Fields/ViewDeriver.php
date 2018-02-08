@@ -71,6 +71,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
     if (!empty($arguments)) {
       return [
         'contextualFilter' => [
+          // TODO: use $display->getGraphQLContextualFilterInputName()
           'type' => StringHelper::camelCase($id, 'contextual', 'filter', 'input'),
         ],
       ];
@@ -97,7 +98,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
         'default' => 'ASC',
       ],
       'sortBy' => [
-        'type' => StringHelper::camelCase($id, 'sort', 'by'),
+        'type' => $display->getGraphQLSortByName(),
       ],
     ] : [];
   }
