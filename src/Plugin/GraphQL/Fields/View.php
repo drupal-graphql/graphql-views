@@ -6,9 +6,10 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\graphql\GraphQL\Execution\ResolveContext;
 use Drupal\graphql\Plugin\GraphQL\Fields\FieldPluginBase;
+use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Execution\ResolveInfo;
 
 /**
  * Expose views as root fields.
@@ -59,7 +60,7 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function resolveValues($value, array $args, ResolveInfo $info) {
+  public function resolveValues($value, array $args, ResolveContext $context, ResolveInfo $info) {
     $storage = $this->entityTypeManager->getStorage('view');
     $definition = $this->getPluginDefinition();
 
@@ -98,7 +99,7 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  protected function getCacheDependencies(array $result, $value, array $args, ResolveInfo $info) {
+  protected function getCacheDependencies(array $result, $value, array $args, ResolveContext $context, ResolveInfo $info) {
     return array_map(function ($item) {
       return $item['cache'];
     }, $result);
