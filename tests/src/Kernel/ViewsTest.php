@@ -292,7 +292,6 @@ GQL;
     ], $this->defaultCacheMetaData()->addCacheTags([
       'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
-      'node:1',
       'node_list',
     ]));
   }
