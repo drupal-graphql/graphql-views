@@ -254,7 +254,12 @@ class GraphQL extends DisplayPluginBase {
 
     // Apply the cache metadata from the display plugin. This comes back as a
     // cache render array so we have to transform it back afterwards.
-    $this->applyDisplayCacheabilityMetadata($this->view->element);
+    if (method_exists($this, 'applyDisplayCacheabilityMetadata')) {
+      $this->applyDisplayCacheabilityMetadata($this->view->element);
+    }
+    else {
+      $this->applyDisplayCachablityMetadata($this->view->element);
+    }
 
     return [
       'view' => $this->view,
