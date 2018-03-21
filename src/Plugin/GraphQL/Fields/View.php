@@ -6,9 +6,10 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\graphql\GraphQL\Execution\ResolveContext;
 use Drupal\graphql\Plugin\GraphQL\Fields\FieldPluginBase;
+use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Execution\ResolveInfo;
 
 /**
  * Expose views as root fields.
@@ -59,7 +60,7 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function resolveValues($value, array $args, ResolveInfo $info) {
+  public function resolveValues($value, array $args, ResolveContext $context, ResolveInfo $info) {
     $storage = $this->entityTypeManager->getStorage('view');
     $definition = $this->getPluginDefinition();
 
@@ -91,14 +92,24 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
         $executable->setCurrentPage($args['page']);
       }
 
-      yield $executable->render($definition['display']);
+      $result = $executable->render($definition['display']);
+      /** @var \Drupal\Core\Cache\CacheableMetadata $cache */
+      if ($cache = $result['cache']) {
+        $cache->setCacheContexts(
+          array_filter($cache->getCacheContexts(), function ($context) {
+            // Don't emit the url cache contexts.
+            return $context !== 'url' && strpos($context, 'url.') !== 0;
+          })
+        );
+      }
+      yield $result;
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getCacheDependencies(array $result, $value, array $args, ResolveInfo $info) {
+  protected function getCacheDependencies(array $result, $value, array $args, ResolveContext $context, ResolveInfo $info) {
     return array_map(function ($item) {
       return $item['cache'];
     }, $result);

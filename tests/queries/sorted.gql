@@ -5,25 +5,25 @@
     }
   }
 
-  asc:graphqlTestSortedView(sortBy: title) {
+  asc:graphqlTestSortedView(sortBy: TITLE) {
     results {
       entityLabel
     }
   }
 
-  desc:graphqlTestSortedView(sortBy: title, sortDirection: desc) {
+  desc:graphqlTestSortedView(sortBy: TITLE, sortDirection: DESC) {
     results {
       entityLabel
     }
   }
 
-  asc_nid:graphqlTestSortedView(sortBy: nid, sortDirection: asc) {
+  asc_nid:graphqlTestSortedView(sortBy: NID, sortDirection: ASC) {
     results {
       entityLabel
     }
   }
 
-  desc_nid:graphqlTestSortedView(sortBy: nid, sortDirection: desc) {
+  desc_nid:graphqlTestSortedView(sortBy: NID, sortDirection: DESC) {
     results {
       entityLabel
     }

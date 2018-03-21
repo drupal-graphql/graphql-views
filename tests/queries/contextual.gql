@@ -26,7 +26,7 @@ query ($test2NodeId: String!) {
     }
   }
 
-  node2:nodeById (id: "1", language: en) {
+  node2:nodeById (id: "1", language: EN) {
     ... on Node {
       graphqlTestContextualNodeView {
         results {
@@ -35,7 +35,7 @@ query ($test2NodeId: String!) {
       }
     }
   }
-  node3:nodeById (id: "1", language: en) {
+  node3:nodeById (id: "1", language: EN) {
     ... on Node {
       graphqlTestContextualNodeView (contextualFilter: {nid: "X"}) {
         results {
@@ -44,7 +44,7 @@ query ($test2NodeId: String!) {
       }
     }
   }
-  node4:nodeById (id: "1", language: en) {
+  node4:nodeById (id: "1", language: EN) {
     ... on NodeTest {
       graphqlTestContextualNodeView {
         results {
@@ -53,7 +53,7 @@ query ($test2NodeId: String!) {
       }
     }
   }
-  node5:nodeById (id: "1", language: en) {
+  node5:nodeById (id: "1", language: EN) {
     ... on NodeTest {
       graphqlTestContextualNodeView (contextualFilter: {nid: "X"}) {
         results {
@@ -76,7 +76,7 @@ query ($test2NodeId: String!) {
     }
   }
 
-  nodetest2:nodeById (id: "1", language: en) {
+  nodetest2:nodeById (id: "1", language: EN) {
     ... on NodeTest {
       graphqlTestContextualNodetestView {
         results {
@@ -86,7 +86,7 @@ query ($test2NodeId: String!) {
     }
   }
 
-  nodetest3:nodeById (id: "1", language: en) {
+  nodetest3:nodeById (id: "1", language: EN) {
     ... on NodeTest {
       graphqlTestContextualNodetestView (contextualFilter: {nid: "X"}) {
         results {
@@ -109,7 +109,7 @@ query ($test2NodeId: String!) {
     }
   }
 
-  node_and_nodetest2:nodeById (id: $test2NodeId, language: en) {
+  node_and_nodetest2:nodeById (id: $test2NodeId, language: EN) {
     ... on Node {
       graphqlTestContextualNodeAndNodetestView {
         results {
@@ -118,7 +118,7 @@ query ($test2NodeId: String!) {
       }
     }
   }
-  node_and_nodetest3:nodeById (id: $test2NodeId, language: en) {
+  node_and_nodetest3:nodeById (id: $test2NodeId, language: EN) {
     ... on Node {
       graphqlTestContextualNodeAndNodetestView (contextualFilter: {nid: "X", nid_1: "X"}) {
         results {
@@ -128,7 +128,7 @@ query ($test2NodeId: String!) {
     }
   }
 
-  node_and_nodetest4:nodeById (id: "1", language: en) {
+  node_and_nodetest4:nodeById (id: "1", language: EN) {
     ... on NodeTest {
       graphqlTestContextualNodeAndNodetestView {
         results {
@@ -138,7 +138,7 @@ query ($test2NodeId: String!) {
     }
   }
 
-  node_and_nodetest5:nodeById (id: "1", language: en) {
+  node_and_nodetest5:nodeById (id: "1", language: EN) {
     ... on NodeTest {
       graphqlTestContextualNodeAndNodetestView (contextualFilter: {nid: "X", nid_1: "X"}) {
         results {
