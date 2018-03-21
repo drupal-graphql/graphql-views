@@ -9,12 +9,24 @@ use Drupal\graphql\Plugin\GraphQL\Enums\EnumPluginBase;
  *   id = "view_sort_direction",
  *   name = "ViewSortDirection",
  *   provider = "views",
- *   values = {
- *     "ASC" = "asc",
- *     "DESC" = "desc"
- *   }
  * )
  */
 class ViewSortDirection extends EnumPluginBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildEnumValues($definition) {
+    return [
+      'ASC' => [
+        'value' => 'ASC',
+        'description' => 'Sort in ascending order.',
+      ],
+      'DESC' => [
+        'value' => 'DESC',
+        'description' => 'Sort in descending order.',
+      ],
+    ];
+  }
 
 }

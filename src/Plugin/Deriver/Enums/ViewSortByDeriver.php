@@ -24,15 +24,16 @@ class ViewSortByDeriver extends ViewDeriverBase {
 
         /** @var \Drupal\graphql_views\Plugin\views\display\GraphQL $display */
         $display = $this->getViewDisplay($view, $displayId);
-        $sorts = array_map(function ($sort) {
-          return [
-            'name' => $sort['id'],
+        $sorts = array_filter($display->getOption('sorts') ?: [], function ($sort) {
+          return $sort['exposed'];
+        });
+        $sorts = array_reduce($sorts, function ($carry, $sort) {
+          $carry[strtoupper($sort['id'])] = [
             'value' => $sort['id'],
             'description' => $sort['expose']['label'],
           ];
-        }, array_filter($display->getOption('sorts') ?: [], function($sort) {
-          return $sort['exposed'];
-        }));
+          return $carry;
+        }, []);
 
         if (!empty($sorts)) {
           $id = implode('-', [$viewId, $displayId, 'view']);
