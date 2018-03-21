@@ -2,9 +2,10 @@
 
 namespace Drupal\graphql_views\Plugin\GraphQL\Fields;
 
+use Drupal\graphql\GraphQL\Execution\ResolveContext;
 use Drupal\graphql\Plugin\GraphQL\Fields\FieldPluginBase;
 use Drupal\views\ViewExecutable;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * Expose result count of a view.
@@ -23,7 +24,7 @@ class ViewResultCount extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function resolveValues($value, array $args, ResolveInfo $info) {
+  public function resolveValues($value, array $args, ResolveContext $context, ResolveInfo $info) {
     if (isset($value['view']) && $value['view'] instanceof ViewExecutable) {
       yield intval($value['view']->total_rows);
     }

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\graphql_views\Kernel;
 
+
 /**
  * Test views support in GraphQL.
  *
@@ -10,29 +11,59 @@ namespace Drupal\Tests\graphql_views\Kernel;
 class ViewsTest extends ViewsTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected function defaultCacheContexts() {
+    return array_merge([
+      'languages:language_content',
+      'languages:language_interface',
+      'user.permissions',
+      'user.node_grants:view',
+    ], parent::defaultCacheContexts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function defaultCacheTags() {
+    return array_merge([
+      'config:field.storage.node.field_tags',
+    ], parent::defaultCacheTags());
+  }
+
+  /**
    * Test that the view returns both nodes.
    */
   public function testSimpleView() {
-
-    $result = $this->executeQueryFile('simple.gql');
-
-    $this->assertEquals([
-      [
-        'entityLabel' => 'Node A',
-      ], [
-        'entityLabel' => 'Node B',
-      ], [
-        'entityLabel' => 'Node C',
+    $query = $this->getQueryFromFile('simple.gql');
+    $this->assertResults($query, [], [
+      'graphqlTestSimpleView' => [
+        'results' => [
+          [
+            'entityLabel' => 'Node A',
+          ], [
+            'entityLabel' => 'Node B',
+          ], [
+            'entityLabel' => 'Node C',
+          ],
+        ],
       ],
-    ], $result['data']['graphqlTestSimpleView']['results']);
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:1',
+      'node:2',
+      'node:3',
+      'node_list',
+    ]));
   }
 
   /**
    * Test paging support.
    */
   public function testPagedView() {
-    $result = $this->executeQueryFile('paged.gql');
-    $this->assertEquals([
+    $query = $this->getQueryFromFile('paged.gql');
+    $this->assertResults($query, [], [
       'page_one' => [
         'count' => count($this->letters),
         'results' => [
@@ -61,15 +92,26 @@ class ViewsTest extends ViewsTestBase {
           ['entityLabel' => 'Node C'],
         ],
       ],
-    ], $result['data'], 'Paged views return the correct results.');
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:1',
+      'node:2',
+      'node:3',
+      'node:4',
+      'node:7',
+      'node:8',
+      'node:9',
+      'node_list',
+    ]));
   }
 
   /**
    * Test sorting behavior.
    */
   public function testSortedView() {
-    $result = $this->executeQueryFile('sorted.gql');
-    $this->assertEquals([
+    $query = $this->getQueryFromFile('sorted.gql');
+    $this->assertResults($query, [], [
       'default' => [
         'results' => [
           ['entityLabel' => 'Node A'],
@@ -105,60 +147,154 @@ class ViewsTest extends ViewsTestBase {
           ['entityLabel' => 'Node A'],
         ],
       ],
-    ], $result['data'], 'Sorting works as expected.');
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:1',
+      'node:2',
+      'node:3',
+      'node:4',
+      'node:6',
+      'node:7',
+      'node:8',
+      'node:9',
+      'node_list',
+    ]));
   }
 
   /**
    * Test filter behavior.
    */
   public function testFilteredView() {
-    $result = $this->executeQueryFile('filtered.gql');
-    $this->assertEquals([
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node A'],
-    ], $result['data']['default']['results'], 'Filtering works as expected.');
+    $query = <<<GQL
+query {
+  default:graphqlTestFilteredView (filter: {title: "A"}) {
+    results {
+      entityLabel
+    }
+  }
+}
+
+GQL;
+
+    $this->assertResults($query, [], [
+      'default' => [
+        'results' => [
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node A'],
+        ],
+      ],
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:1',
+      'node:4',
+      'node:7',
+      'node_list',
+    ]));
   }
 
   /**
    * Test filter behavior.
    */
   public function testMultiValueFilteredView() {
-    $result = $this->executeQueryFile('filtered.gql');
-    $this->assertEquals([
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node B'],
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node B'],
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node B'],
-    ], $result['data']['multi']['results'], 'Filtering works as expected.');
+    $query = <<<GQL
+query {
+  multi:graphqlTestFilteredView (filter: {field_tags: ["1", "2"]}) {
+    results {
+      entityLabel
+    }
+  }
+}
+GQL;
+    $this->assertResults($query, [], [
+      'multi' => [
+        'results' => [
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node B'],
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node B'],
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node B'],
+        ],
+      ],
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:1',
+      'node:2',
+      'node:4',
+      'node:5',
+      'node:7',
+      'node:8',
+      'node_list',
+
+    ]));
   }
 
   /**
    * Test complex filters.
    */
   public function testComplexFilteredView() {
-    $result = $this->executeQueryFile('filtered.gql');
-    $this->assertEquals([
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node B'],
-      ['entityLabel' => 'Node C'],
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node B'],
-      ['entityLabel' => 'Node C'],
-      ['entityLabel' => 'Node A'],
-      ['entityLabel' => 'Node B'],
-      ['entityLabel' => 'Node C'],
-    ], $result['data']['complex']['results'], 'Filtering works as expected.');
+    $query = <<<GQL
+query {
+  complex:graphqlTestFilteredView(filter: {node_type:{test:"test"}}) {
+    results {
+      entityLabel
+    }
+  }
+}
+GQL;
+    $this->assertResults($query, [], [
+      'complex' => [
+        'results' => [
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node B'],
+          ['entityLabel' => 'Node C'],
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node B'],
+          ['entityLabel' => 'Node C'],
+          ['entityLabel' => 'Node A'],
+          ['entityLabel' => 'Node B'],
+          ['entityLabel' => 'Node C'],
+        ],
+      ],
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:1',
+      'node:2',
+      'node:3',
+      'node:4',
+      'node:5',
+      'node:6',
+      'node:7',
+      'node:8',
+      'node:9',
+      'node_list',
+    ]));
   }
 
   /**
-   * Test the result type for views with (and without) a single-value bundle filter.
+   * Test the result type for views with a single-value bundle filter.
    */
   public function testSingleValueBundleFilterView() {
-    $result = $this->executeQueryFile('single_bundle_filter.gql');
-    $this->assertEquals('NodeTest', $result['data']['withSingleBundleFilter']['results'][0]['__typename'], 'View result types work as expected.');
+    $query = $this->getQueryFromFile('single_bundle_filter.gql');
+    $this->assertResults($query, [], [
+      'withSingleBundleFilter' => [
+        'results' => [
+          0 => [
+            '__typename' => 'NodeTest',
+          ],
+        ],
+      ],
+    ], $this->defaultCacheMetaData()->addCacheTags([
+      'config:views.view.graphql_bundle_test',
+      'config:views.view.graphql_test',
+      'node:9',
+      'node_list',
+    ]));
   }
 
 }

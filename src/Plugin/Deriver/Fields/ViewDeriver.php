@@ -98,7 +98,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
     return !empty($sorts) ? [
       'sortDirection' => [
         'type' => 'ViewSortDirection',
-        'default' => 'ASC',
+        'default' => 'asc',
       ],
       'sortBy' => [
         'type' => StringHelper::camelCase($id, 'sort', 'by'),
@@ -175,7 +175,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
         $types = array_merge($types, [StringHelper::camelCase($argument['entity_type'])]);
       }
       else {
-        $types = array_merge($types, array_map(function($bundle) use ($argument) {
+        $types = array_merge($types, array_map(function ($bundle) use ($argument) {
           return StringHelper::camelCase($argument['entity_type'], $bundle);
         }, array_keys($argument['bundles'])));
       }
