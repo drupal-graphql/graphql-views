@@ -91,7 +91,11 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
    *   The sort arguments if any exposed sorts are available.
    */
   protected function getSortArguments(DisplayPluginInterface $display, $id) {
-    return $display->getOption('sorts') ? [
+    $sorts = array_filter($display->getOption('sorts') ?: [], function($sort) {
+      return $sort['exposed'];
+    });
+
+    return !empty($sorts) ? [
       'sortDirection' => [
         'type' => 'ViewSortDirection',
         'default' => 'ASC',
