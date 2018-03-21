@@ -2,8 +2,9 @@
 
 namespace Drupal\graphql_views\Plugin\GraphQL\Fields;
 
+use Drupal\graphql\GraphQL\Execution\ResolveContext;
 use Drupal\graphql\Plugin\GraphQL\Fields\FieldPluginBase;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * Expose view row fields for configured fieldable views.
@@ -20,10 +21,11 @@ class ViewRowField extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function resolveValues($value, array $args, ResolveInfo $info) {
+  public function resolveValues($value, array $args, ResolveContext $context, ResolveInfo $info) {
     $definition = $this->getPluginDefinition();
     if (isset($value[$definition['field']])) {
       yield $value[$definition['field']];
     }
   }
+
 }

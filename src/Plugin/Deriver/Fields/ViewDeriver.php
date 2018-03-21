@@ -92,10 +92,13 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
    *   The sort arguments if any exposed sorts are available.
    */
   protected function getSortArguments(DisplayPluginInterface $display, $id) {
-    return $display->getOption('sorts') ? [
+    $sorts = array_filter($display->getOption('sorts') ?: [], function ($sort) {
+      return $sort['exposed'];
+    });
+    return $sorts ? [
       'sortDirection' => [
         'type' => 'ViewSortDirection',
-        'default' => 'ASC',
+        'default' => 'asc',
       ],
       'sortBy' => [
         'type' => $display->getGraphQLSortByName(),
@@ -172,7 +175,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
         $types = array_merge($types, [StringHelper::camelCase($argument['entity_type'])]);
       }
       else {
-        $types = array_merge($types, array_map(function($bundle) use ($argument) {
+        $types = array_merge($types, array_map(function ($bundle) use ($argument) {
           return StringHelper::camelCase($argument['entity_type'], $bundle);
         }, array_keys($argument['bundles'])));
       }

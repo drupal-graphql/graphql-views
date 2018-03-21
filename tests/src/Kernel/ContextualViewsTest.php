@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\graphql_views\Kernel;
 
-use Drupal\graphql\GraphQL\Utility\TypeCollector;
+use GraphQL\Server\OperationParams;
 
 /**
  * Test contextual views support in GraphQL.
@@ -12,30 +12,32 @@ use Drupal\graphql\GraphQL\Utility\TypeCollector;
 class ContextualViewsTest extends ViewsTestBase {
 
   /**
-   * The GraphQL schema.
-   *
-   * @var \Youshido\GraphQL\Schema\AbstractSchema
-   */
-  protected $schema;
-
-  /**
-   * The types collected from the GraphQL schema.
-   *
-   * @var \Youshido\GraphQL\Type\TypeInterface[]
-   */
-  protected $types;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
     $this->createContentType(['type' => 'test2']);
+  }
 
-    /** @var \Drupal\graphql_test\Plugin\GraphQL\Schemas\TestSchema $schema */
-    $schema = \Drupal::service('plugin.manager.graphql.schema')->createInstance('test');
-    $this->schema = $schema->getSchema();
-    $this->types = TypeCollector::collectTypes($this->schema);
+  /**
+   * {@inheritdoc}
+   */
+  protected function defaultCacheContexts() {
+    return array_merge([
+      'languages:language_content',
+      'languages:language_interface',
+      'user.permissions',
+      'user.node_grants:view',
+    ], parent::defaultCacheContexts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function defaultCacheTags() {
+    return array_merge([
+      'config:field.storage.node.field_tags',
+    ], parent::defaultCacheTags());
   }
 
   /**
@@ -43,9 +45,14 @@ class ContextualViewsTest extends ViewsTestBase {
    */
   public function testContextualViewArgs() {
     $test2Node = $this->createNode(['type' => 'test2']);
-    $this->executeQueryFile('contextual.gql', [
-      'test2NodeId' => $test2Node->id(),
-    ]);
+
+    $this->graphQlProcessor()->processQuery(
+      $this->getDefaultSchema(),
+      OperationParams::create([
+        'query' => $this->getQueryFromFile('contextual.gql'),
+        'variables' => ['test2NodeId' => $test2Node->id()],
+      ])
+    );
 
     $this->assertEquals(drupal_static('graphql_views_test:view:args'), [
       'graphql_test:contextual_title_arg' => [
@@ -81,63 +88,27 @@ class ContextualViewsTest extends ViewsTestBase {
    * Test if view fields are attached to correct types.
    */
   public function testContextualViewFields() {
+    $schema = $this->introspect();
+
     $field = 'graphqlTestContextualTitleArgView';
-    $this->assertFieldExists('Root', $field);
-    $this->assertFieldNotExists('Node', $field);
-    $this->assertFieldNotExists('NodeTest', $field);
+    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayNotHasKey($field, $schema['types']['Node']['fields']);
+    $this->assertArrayNotHasKey($field, $schema['types']['NodeTest']['fields']);
 
     $field = 'graphqlTestContextualNodeView';
-    $this->assertFieldExists('Root', $field);
-    $this->assertFieldExists('Node', $field);
-    $this->assertFieldExists('NodeTest', $field);
+    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['Node']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['NodeTest']['fields']);
 
     $field = 'graphqlTestContextualNodetestView';
-    $this->assertFieldExists('Root', $field);
-    $this->assertFieldNotExists('Node', $field);
-    $this->assertFieldExists('NodeTest', $field);
+    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayNotHasKey($field, $schema['types']['Node']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['NodeTest']['fields']);
 
     $field = 'graphqlTestContextualNodeAndNodetestView';
-    $this->assertFieldExists('Root', $field);
-    $this->assertFieldExists('Node', $field);
-    $this->assertFieldExists('NodeTest', $field);
-  }
-
-  /**
-   * Assert that field exists on a GraphQL type.
-   *
-   * @param string $type
-   *   GraphQL type name.
-   * @param string $fieldName
-   *   GraphQL field name.
-   */
-  protected function assertFieldExists($type, $fieldName) {
-    $this->assertArrayHasKey($fieldName, $this->getFields($type), "Field {$fieldName} exists on {$type} type.");
-  }
-
-  /**
-   * Assert that field does not exist on a GraphQL type.
-   *
-   * @param string $type
-   *   GraphQL type name.
-   * @param string $fieldName
-   *   GraphQL field name.
-   */
-  protected function assertFieldNotExists($type, $fieldName) {
-    $this->assertArrayNotHasKey($fieldName, $this->getFields($type), "Field {$fieldName} does not exist on {$type} type.");
-  }
-
-  /**
-   * Returns list of GraphQL fields attached to a type.
-   *
-   * @param string $type
-   *   GraphQL type name.
-   *
-   * @return \Youshido\GraphQL\Field\Field[]
-   */
-  protected function getFields($type) {
-    return $type === 'Root'
-      ? $this->schema->getQueryType()->getFields()
-      : $this->types[$type]->getConfig()->getFields();
+    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['Node']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['NodeTest']['fields']);
   }
 
 }

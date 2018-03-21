@@ -251,8 +251,12 @@ abstract class ViewDeriverBase extends DeriverBase implements ContainerDeriverIn
   protected function getCacheMetadataDefinition(ViewEntityInterface $view) {
     return [
       'schema_cache_tags' => $view->getCacheTags(),
-      'schema_cache_contexts' => $view->getCacheContexts(),
       'schema_cache_max_age' => $view->getCacheMaxAge(),
+      'response_cache_contexts' => array_merge($view->getCacheContexts(), [
+        // TODO: check if they are really always there.
+        'languages:language_interface',
+        'languages:language_content',
+      ]),
     ];
   }
 
