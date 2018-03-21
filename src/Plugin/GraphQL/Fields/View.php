@@ -19,7 +19,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   secure = true,
  *   parents = {"Root"},
  *   provider = "views",
- *   deriver = "Drupal\graphql_views\Plugin\Deriver\Fields\ViewDeriver"
+ *   deriver = "Drupal\graphql_views\Plugin\Deriver\Fields\ViewDeriver",
+ *   arguments = {
+ *     "language" = "LanguageId"
+ *   },
+ *   response_cache_contexts = {
+ *     "languages:language_content",
+ *     "languages:language_interface",
+ *   },
+ *   contextual_arguments = {"language"}
  * )
  */
 class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
