@@ -254,6 +254,7 @@ abstract class ViewDeriverBase extends DeriverBase implements ContainerDeriverIn
       'schema_cache_max_age' => $view->getCacheMaxAge(),
       'response_cache_contexts' => array_merge($view->getCacheContexts(), [
         // TODO: check if they are really always there.
+        'languages:language_interface',
         'languages:language_content',
       ]),
     ];
