@@ -27,4 +27,5 @@ class ViewRowField extends FieldPluginBase {
       yield $value[$definition['field']];
     }
   }
+
 }

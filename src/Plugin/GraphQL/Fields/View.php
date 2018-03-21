@@ -100,7 +100,17 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
         $executable->setCurrentPage($args['page']);
       }
 
-      yield $executable->render($definition['display']);
+      $result = $executable->render($definition['display']);
+      /** @var \Drupal\Core\Cache\CacheableMetadata $cache */
+      if ($cache = $result['cache']) {
+        $cache->setCacheContexts(
+          array_filter($cache->getCacheContexts(), function ($context) {
+            // Don't emit the url cache contexts.
+            return $context !== 'url' && strpos($context, 'url.') !== 0;
+          })
+        );
+      }
+      yield $result;
     }
   }
 

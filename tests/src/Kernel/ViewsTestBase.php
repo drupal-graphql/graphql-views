@@ -46,22 +46,15 @@ abstract class ViewsTestBase extends ViewsTestBaseDeprecationFix {
    */
   protected function setUp() {
     parent::setUp();
-    $this->installEntitySchema('node');
     $this->installEntitySchema('view');
     $this->installEntitySchema('taxonomy_term');
     $this->installConfig(['node', 'filter', 'views', 'graphql_views_test']);
-    $this->installSchema('node', 'node_access');
-    $this->createContentType(['type' => 'test']);
     $this->createEntityReferenceField('node', 'test', 'field_tags', 'Tags', 'taxonomy_term');
 
     Vocabulary::create([
       'name' => 'Tags',
       'vid' => 'tags',
     ])->save();
-
-    Role::load('anonymous')
-      ->grantPermission('access content')
-      ->save();
 
     $terms = [];
 
