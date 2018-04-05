@@ -60,7 +60,7 @@ class ViewFilterInputDeriver extends ViewDeriverBase implements ContainerDeriver
           'fields' => $fields,
           'view' => $viewId,
           'display' => $displayId,
-        ] + $this->getCacheMetadataDefinition($view) + $basePluginDefinition;
+        ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
       }
 
     }

@@ -248,15 +248,11 @@ abstract class ViewDeriverBase extends DeriverBase implements ContainerDeriverIn
    * @return array
    *   The cache metadata definitions for the plugin definition.
    */
-  protected function getCacheMetadataDefinition(ViewEntityInterface $view) {
+  protected function getCacheMetadataDefinition(DisplayPluginInterface $display) {
     return [
-      'schema_cache_tags' => $view->getCacheTags(),
-      'schema_cache_max_age' => $view->getCacheMaxAge(),
-      'response_cache_contexts' => array_merge($view->getCacheContexts(), [
-        // TODO: check if they are really always there.
-        'languages:language_interface',
-        'languages:language_content',
-      ]),
+      'schema_cache_tags' => $display->getCacheMetadata()->getCacheTags(),
+      'schema_cache_max_age' => $display->getCacheMetadata()->getCacheMaxAge(),
+      'response_cache_contexts' => $display->getCacheMetadata()->getCacheContexts(),
     ];
   }
 

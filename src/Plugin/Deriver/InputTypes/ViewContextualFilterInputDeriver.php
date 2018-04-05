@@ -30,7 +30,7 @@ class ViewContextualFilterInputDeriver extends ViewDeriverBase implements Contai
         $argumentsInfo = $this->getArgumentsInfo($display->getOption('arguments') ?: []);
         if (!empty($argumentsInfo)) {
           $id = implode('_', [
-            $viewId, $displayId, 'view', 'contextual', 'filter', 'input'
+            $viewId, $displayId, 'view', 'contextual', 'filter', 'input',
           ]);
 
           $this->derivatives[$id] = [
@@ -41,7 +41,7 @@ class ViewContextualFilterInputDeriver extends ViewDeriverBase implements Contai
             ]),
             'view' => $viewId,
             'display' => $displayId,
-          ] + $this->getCacheMetadataDefinition($view) + $basePluginDefinition;
+          ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
         }
       }
     }

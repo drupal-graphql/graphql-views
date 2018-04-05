@@ -42,7 +42,7 @@ class ViewRowFieldDeriver extends ViewDeriverBase {
             'view' => $viewId,
             'display' => $displayId,
             'field' => $alias,
-          ] + $this->getCacheMetadataDefinition($view) + $basePluginDefinition;
+          ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
         }
       }
     }
