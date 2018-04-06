@@ -39,7 +39,7 @@ class ViewRowTypeDeriver extends ViewDeriverBase {
           'name' => $display->getGraphQLRowName(),
           'view' => $viewId,
           'display' => $displayId,
-        ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
+        ] + $this->getCacheMetadataDefinition($view, $display) + $basePluginDefinition;
       }
     }
 

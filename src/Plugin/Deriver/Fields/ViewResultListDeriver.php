@@ -37,7 +37,7 @@ class ViewResultListDeriver extends ViewDeriverBase {
           'view' => $viewId,
           'display' => $displayId,
           'uses_fields' => $style->usesFields(),
-        ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
+        ] + $this->getCacheMetadataDefinition($view, $display) + $basePluginDefinition;
       }
     }
 

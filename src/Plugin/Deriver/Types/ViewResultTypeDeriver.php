@@ -33,7 +33,7 @@ class ViewResultTypeDeriver extends ViewDeriverBase {
           'name' => $display->getGraphQLResultName(),
           'view' => $viewId,
           'display' => $displayId,
-        ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
+        ] + $this->getCacheMetadataDefinition($view, $display) + $basePluginDefinition;
       }
     }
 

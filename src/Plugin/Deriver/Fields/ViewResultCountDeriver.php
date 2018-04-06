@@ -37,7 +37,7 @@ class ViewResultCountDeriver extends ViewDeriverBase {
           'parents' => [$display->getGraphQLResultName()],
           'view' => $viewId,
           'display' => $displayId,
-        ] + $this->getCacheMetadataDefinition($display) + $basePluginDefinition;
+        ] + $this->getCacheMetadataDefinition($view, $display) + $basePluginDefinition;
       }
     }
 
