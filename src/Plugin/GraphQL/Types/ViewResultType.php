@@ -12,7 +12,7 @@ use GraphQL\Type\Definition\ResolveInfo;
  * @GraphQLType(
  *   id = "view_result_type",
  *   provider = "views",
- *   unions = {"View"},
+ *   unions = {"ViewResult"},
  *   deriver = "Drupal\graphql_views\Plugin\Deriver\Types\ViewResultTypeDeriver"
  * )
  */

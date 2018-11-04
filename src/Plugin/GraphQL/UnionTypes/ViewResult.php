@@ -6,12 +6,12 @@ use Drupal\graphql\Plugin\GraphQL\Unions\UnionTypePluginBase;
 
 /**
  * @GraphQLUnionType(
- *   id = "view",
- *   name = "View",
+ *   id = "view_result",
+ *   name = "ViewResult",
  *   provider = "views",
  *   description = @Translation("Common view interface containing generic view properties.")
  * )
  */
-class View extends UnionTypePluginBase {
+class ViewResult extends UnionTypePluginBase {
 
 }
