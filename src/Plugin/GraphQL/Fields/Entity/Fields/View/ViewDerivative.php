@@ -10,7 +10,7 @@ use Drupal\views\Plugin\views\display\DisplayPluginInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 /**
- * Retrieve the image field derivative (image style).
+ * Retrieve the views field derivative.
  *
  * @GraphQLField(
  *   id = "view_derivative",
