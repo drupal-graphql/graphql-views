@@ -197,13 +197,13 @@ class GraphQLFieldRow extends RowPluginBase {
   }
 
   /**
-   * Return an alias for a field ID, as set in the options form.
+   * Return a GraphQL field type, as set in the options form.
    *
    * @param string $id
-   *   The field id to lookup an alias for.
+   *   The field id to lookup a type for.
    *
    * @return string
-   *   The matches user entered alias, or the original ID if nothing is found.
+   *   The matches user entered type, or String.
    */
   public function getFieldType($id) {
     if (isset($this->typeOptions[$id])) {
