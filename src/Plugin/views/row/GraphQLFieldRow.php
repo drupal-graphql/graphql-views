@@ -123,6 +123,7 @@ class GraphQLFieldRow extends RowPluginBase {
           '#options' => [
             'String' => $this->t('String'),
             'Int' => $this->t('Int'),
+            'Float' => $this->t('Float'),
             'Boolean' => $this->t('Boolean'),
           ],
           '#default_value' => isset($options[$id]['type']) ? $options[$id]['type'] : 'String',
