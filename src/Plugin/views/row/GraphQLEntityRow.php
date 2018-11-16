@@ -3,7 +3,7 @@
 namespace Drupal\graphql_views\Plugin\views\row;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\views\Entity\Render\EntityTranslationRenderTrait;
@@ -44,7 +44,7 @@ class GraphQLEntityRow extends RowPluginBase {
    *
    * @var \Drupal\Core\Entity\EntityManagerInterface
    */
-  protected $entityTypeManager;
+  protected $entityManager;
 
   /**
    * The language manager.
@@ -56,15 +56,15 @@ class GraphQLEntityRow extends RowPluginBase {
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entityManager
    *   The entity type manager.
    * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
    *   The language manager.
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityTypeManagerInterface $entityTypeManager, LanguageManagerInterface $languageManager) {
+  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityManagerInterface $entityManager, LanguageManagerInterface $languageManager) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);
 
-    $this->entityTypeManager = $entityTypeManager;
+    $this->entityManager = $entityManager;
     $this->languageManager = $languageManager;
   }
 
@@ -76,7 +76,7 @@ class GraphQLEntityRow extends RowPluginBase {
       $configuration,
       $pluginId,
       $pluginDefinition,
-      $container->get('entity_type.manager'),
+      $container->get('entity.manager'),
       $container->get('language_manager')
     );
   }
@@ -118,7 +118,7 @@ class GraphQLEntityRow extends RowPluginBase {
    * {@inheritdoc}
    */
   protected function getEntityManager() {
-    return $this->entityTypeManager;
+    return $this->entityManager;
   }
 
   /**

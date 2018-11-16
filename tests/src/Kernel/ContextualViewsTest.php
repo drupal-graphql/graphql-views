@@ -91,22 +91,22 @@ class ContextualViewsTest extends ViewsTestBase {
     $schema = $this->introspect();
 
     $field = 'graphqlTestContextualTitleArgView';
-    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['Query']['fields']);
     $this->assertArrayNotHasKey($field, $schema['types']['Node']['fields']);
     $this->assertArrayNotHasKey($field, $schema['types']['NodeTest']['fields']);
 
     $field = 'graphqlTestContextualNodeView';
-    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['Query']['fields']);
     $this->assertArrayHasKey($field, $schema['types']['Node']['fields']);
     $this->assertArrayHasKey($field, $schema['types']['NodeTest']['fields']);
 
     $field = 'graphqlTestContextualNodetestView';
-    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['Query']['fields']);
     $this->assertArrayNotHasKey($field, $schema['types']['Node']['fields']);
     $this->assertArrayHasKey($field, $schema['types']['NodeTest']['fields']);
 
     $field = 'graphqlTestContextualNodeAndNodetestView';
-    $this->assertArrayHasKey($field, $schema['types']['QueryRoot']['fields']);
+    $this->assertArrayHasKey($field, $schema['types']['Query']['fields']);
     $this->assertArrayHasKey($field, $schema['types']['Node']['fields']);
     $this->assertArrayHasKey($field, $schema['types']['NodeTest']['fields']);
   }
