@@ -33,11 +33,12 @@ class ViewRowFieldDeriver extends ViewDeriverBase {
         foreach ($display->getHandlers('field') as $name => $field) {
           $id = implode('-', [$viewId, $displayId, 'field', $name]);
           $alias = $rowPlugin->getFieldKeyAlias($name);
+          $type = $rowPlugin->getFieldType($name);
 
           $this->derivatives[$id] = [
             'id' => $id,
             'name' => $alias,
-            'type' => 'String',
+            'type' => $type,
             'parents' => [$display->getGraphQLRowName()],
             'view' => $viewId,
             'display' => $displayId,
