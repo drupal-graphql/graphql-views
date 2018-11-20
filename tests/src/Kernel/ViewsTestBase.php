@@ -8,16 +8,19 @@ use Drupal\simpletest\NodeCreationTrait;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\user\Entity\Role;
+use Drupal\Tests\graphql_core\Kernel\GraphQLContentTestBase;
+use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
 
 /**
  * Base class for test views support in GraphQL.
  *
  * @group graphql_views
  */
-abstract class ViewsTestBase extends ViewsTestBaseDeprecationFix {
+abstract class ViewsTestBase extends GraphQLContentTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
   use EntityReferenceTestTrait;
+  use TaxonomyTestTrait;
 
   /**
    * {@inheritdoc}
