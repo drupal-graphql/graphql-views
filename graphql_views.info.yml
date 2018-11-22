@@ -4,5 +4,6 @@ description: 'Adds support for views.'
 package: GraphQL
 core: 8.x
 dependencies:
-  - graphql_core
-  - views
+  - graphql:graphql_core
+  - drupal:views
+  - drupal:system (>=8.4)

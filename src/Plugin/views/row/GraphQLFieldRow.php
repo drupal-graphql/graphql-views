@@ -39,6 +39,13 @@ class GraphQLFieldRow extends RowPluginBase {
   protected $rawOutputOptions = [];
 
   /**
+   * Stores an array of field GrpahQL type.
+   *
+   * @var array
+   */
+  protected $typeOptions = [];
+
+  /**
    * {@inheritdoc}
    */
   public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
@@ -51,6 +58,7 @@ class GraphQLFieldRow extends RowPluginBase {
       $this->replacementAliases = array_filter(array_map('trim', $aliases));
       // Prepare an array of raw output field options.
       $this->rawOutputOptions = static::extractFromOptionsArray('raw_output', $options);
+      $this->typeOptions = static::extractFromOptionsArray('type', $options);
     }
   }
 
@@ -72,7 +80,12 @@ class GraphQLFieldRow extends RowPluginBase {
 
     $form['field_options'] = [
       '#type' => 'table',
-      '#header' => [$this->t('Field'), $this->t('Alias'), $this->t('Raw output')],
+      '#header' => [
+        $this->t('Field'),
+        $this->t('Alias'),
+        $this->t('Raw output'),
+        $this->t('Type'),
+      ],
       '#empty' => $this->t('You have no fields. Add some to your view.'),
       '#tree' => TRUE,
     ];
@@ -103,6 +116,17 @@ class GraphQLFieldRow extends RowPluginBase {
           '#title_display' => 'invisible',
           '#type' => 'checkbox',
           '#default_value' => isset($options[$id]['raw_output']) ? $options[$id]['raw_output'] : '',
+        ];
+
+        $form['field_options'][$id]['type'] = [
+          '#type' => 'select',
+          '#options' => [
+            'String' => $this->t('String'),
+            'Int' => $this->t('Int'),
+            'Float' => $this->t('Float'),
+            'Boolean' => $this->t('Boolean'),
+          ],
+          '#default_value' => isset($options[$id]['type']) ? $options[$id]['type'] : 'String',
         ];
       }
     }
@@ -171,6 +195,23 @@ class GraphQLFieldRow extends RowPluginBase {
     }
 
     return $id;
+  }
+
+  /**
+   * Return a GraphQL field type, as set in the options form.
+   *
+   * @param string $id
+   *   The field id to lookup a type for.
+   *
+   * @return string
+   *   The matches user entered type, or String.
+   */
+  public function getFieldType($id) {
+    if (isset($this->typeOptions[$id])) {
+      return $this->typeOptions[$id];
+    }
+
+    return 'String';
   }
 
   /**
