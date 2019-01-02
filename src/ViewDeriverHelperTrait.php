@@ -342,9 +342,12 @@ trait ViewDeriverHelperTrait {
    *     - index: argument index.
    *     - entity_type: target entity type.
    *     - bundles: target bundles (can be empty).
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getArgumentsInfo(array $viewArguments) {
     $argumentsInfo = [];
+    /* @var \Drupal\Core\Entity\EntityTypeManager $entityTypeManager */
     $entityTypeManager = \Drupal::service('entity_type.manager');
 
     $index = 0;
@@ -356,7 +359,7 @@ trait ViewDeriverHelperTrait {
       ];
 
       if (isset($argument['entity_type']) && isset($argument['entity_field'])) {
-        $entityType = $entityTypeManager($argument['entity_type']);
+        $entityType = $entityTypeManager->getDefinition($argument['entity_type']);
         if ($entityType) {
           $idField = $entityType->getKey('id');
           if ($idField === $argument['entity_field']) {

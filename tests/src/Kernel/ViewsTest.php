@@ -21,15 +21,6 @@ class ViewsTest extends ViewsTestBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  protected function defaultCacheTags() {
-    return array_merge([
-      'config:field.storage.node.field_tags',
-    ], parent::defaultCacheTags());
-  }
-
-  /**
    * Test that the view returns both nodes.
    */
   public function testSimpleView() {
@@ -47,7 +38,6 @@ class ViewsTest extends ViewsTestBase {
         ],
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
-      'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
       'node:1',
       'node:2',
@@ -91,7 +81,6 @@ class ViewsTest extends ViewsTestBase {
         ],
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
-      'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
       'node:1',
       'node:2',
@@ -146,7 +135,6 @@ class ViewsTest extends ViewsTestBase {
         ],
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
-      'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
       'node:1',
       'node:2',
@@ -184,7 +172,6 @@ GQL;
         ],
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
-      'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
       'node:1',
       'node:4',
@@ -218,7 +205,6 @@ GQL;
         ],
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
-      'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
       'node:1',
       'node:2',
@@ -259,7 +245,6 @@ GQL;
         ],
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
-      'config:views.view.graphql_bundle_test',
       'config:views.view.graphql_test',
       'node:1',
       'node:2',
@@ -289,7 +274,6 @@ GQL;
       ],
     ], $this->defaultCacheMetaData()->addCacheTags([
       'config:views.view.graphql_bundle_test',
-      'config:views.view.graphql_test',
       'node:1',
       'node_list',
     ]));
