@@ -62,7 +62,7 @@ class ViewDerivative extends View {
     $view = EntityView::load($values['target_id']);
     $display = $this->getViewDisplay($view, $values['display_id']);
     $this->pluginDefinition['paged'] = $this->isPaged($display);
-    $this->pluginDefinition['argument_info'] = $this->getArgumentsInfo($display->getOption('arguments') ?: []);
+    $this->pluginDefinition['arguments_info'] = $this->getArgumentsInfo($display->getOption('arguments') ?: []);
     $this->pluginDefinition = array_merge($this->pluginDefinition, $this->getCacheMetadataDefinition($view, $display));
     $this->setViewDefaultValues($display, $args);
     return parent::resolveValues($value, $args, $context, $info);
