@@ -94,23 +94,23 @@ class ViewDerivative extends View {
    */
   protected function setOverridenViewDefaults($value, array &$args) {
     $viewReferenceConfiguration = $this->getViewReferenceConfiguration($value);
-    if (isset($viewReferenceConfiguration['pager'])) {
+    if (!empty($viewReferenceConfiguration['pager'])) {
       $this->pluginDefinition['paged'] = in_array($viewReferenceConfiguration['pager'], [
         'full',
         'mini',
       ]);
     }
 
-    if (!isset($args['pageSize']) && isset($viewReferenceConfiguration['limit']) && !empty($viewReferenceConfiguration['limit'])) {
+    if (!isset($args['pageSize']) && !empty($viewReferenceConfiguration['limit'])) {
       $args['pageSize'] = $viewReferenceConfiguration['limit'];
     }
 
-    if (!isset($args['offset']) && isset($viewReferenceConfiguration['offset']) && !empty($viewReferenceConfiguration['offset'])) {
+    if (!isset($args['offset']) && !empty($viewReferenceConfiguration['offset'])) {
       $args['offset'] = $viewReferenceConfiguration['offset'];
     }
 
     /* Expected format: {"contextualFilter": {"key": "value","keyN": "valueN"}} */
-    if (!isset($args['contextualFilter']) && isset($viewReferenceConfiguration['argument']) && !empty($viewReferenceConfiguration['argument'])) {
+    if (!isset($args['contextualFilter']) && !empty($viewReferenceConfiguration['argument'])) {
       $argument = json_decode($viewReferenceConfiguration['argument'], TRUE);
       if (isset($argument['contextualFilter']) && !empty($argument['contextualFilter'])) {
         $args['contextualFilter'] = $argument['contextualFilter'];
