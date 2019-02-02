@@ -24,6 +24,10 @@ use GraphQL\Type\Definition\ResolveInfo;
  *       "optional" = true,
  *       "type" = "Untyped"
  *     },
+ *     "offset" = {
+ *       "optional" = true,
+ *       "type" = "Int"
+ *     },
  *     "page" = {
  *       "optional" = true,
  *       "type" = "Int"
@@ -64,8 +68,54 @@ class ViewDerivative extends View {
     $this->pluginDefinition['paged'] = $this->isPaged($display);
     $this->pluginDefinition['arguments_info'] = $this->getArgumentsInfo($display->getOption('arguments') ?: []);
     $this->pluginDefinition = array_merge($this->pluginDefinition, $this->getCacheMetadataDefinition($view, $display));
+    $this->setOverridenViewDefaults($value, $args);
     $this->setViewDefaultValues($display, $args);
     return parent::resolveValues($value, $args, $context, $info);
+  }
+
+  /**
+   * Get configuration values from views reference field.
+   *
+   * @param mixed $value
+   *   The current object value.
+   */
+  protected function getViewReferenceConfiguration($value) {
+    $values = $value->getValue();
+    return isset($values['data']) ? unserialize($values['data']) : [];
+  }
+
+  /**
+   * Set default display settings.
+   *
+   * @param mixed $value
+   *   The current object value.
+   * @param array $args
+   *   Arguments where the default view settings needs to be added.
+   */
+  protected function setOverridenViewDefaults($value, array &$args) {
+    $viewReferenceConfiguration = $this->getViewReferenceConfiguration($value);
+    if (!empty($viewReferenceConfiguration['pager'])) {
+      $this->pluginDefinition['paged'] = in_array($viewReferenceConfiguration['pager'], [
+        'full',
+        'mini',
+      ]);
+    }
+
+    if (!isset($args['pageSize']) && !empty($viewReferenceConfiguration['limit'])) {
+      $args['pageSize'] = $viewReferenceConfiguration['limit'];
+    }
+
+    if (!isset($args['offset']) && !empty($viewReferenceConfiguration['offset'])) {
+      $args['offset'] = $viewReferenceConfiguration['offset'];
+    }
+
+    /* Expected format: {"contextualFilter": {"key": "value","keyN": "valueN"}} */
+    if (!isset($args['contextualFilter']) && !empty($viewReferenceConfiguration['argument'])) {
+      $argument = json_decode($viewReferenceConfiguration['argument'], TRUE);
+      if (isset($argument['contextualFilter']) && !empty($argument['contextualFilter'])) {
+        $args['contextualFilter'] = $argument['contextualFilter'];
+      }
+    }
   }
 
   /**
