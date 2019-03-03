@@ -9,13 +9,13 @@ use GraphQL\Utils\AST;
  * Input types for view contextual filters.
  *
  * @GraphQLScalar(
- *   id = "untyped",
- *   name = "Untyped",
- *   type = "Untyped",
+ *   id = "views_filter_input",
+ *   name = "ViewsFilterInput",
+ *   type = "ViewsFilterInput",
  *   provider = "views"
  * )
  */
-class Untyped extends ScalarPluginBase {
+class ViewsFilterInput extends ScalarPluginBase {
   // @TODO: Untyped input is there because there is no option to create a InputType union. See discussion: https://github.com/graphql/graphql-js/issues/207 and https://github.com/facebook/graphql/issues/488.
 
   /**

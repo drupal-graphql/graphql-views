@@ -19,7 +19,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Base class for graphql view derivers.
  */
 abstract class ViewDeriverBase extends DeriverBase implements ContainerDeriverInterface {
-  use ViewDeriverHelperTrait {getRowResolveType as private traitGetRowResolveType;}
+  use ViewDeriverHelperTrait {
+    getRowResolveType as private traitGetRowResolveType;
+  }
   /**
    * The entity type manager.
    *
@@ -92,7 +94,6 @@ abstract class ViewDeriverBase extends DeriverBase implements ContainerDeriverIn
 
     return !empty($this->dataTables[$table]) ? $this->dataTables[$table] : NULL;
   }
-
 
   /**
    * Retrieves the type the view's rows resolve to.

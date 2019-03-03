@@ -18,11 +18,11 @@ use GraphQL\Type\Definition\ResolveInfo;
  *   name = "viewDerivative",
  *   type = "ViewResult",
  *   field_types = {"viewsreference"},
- *   provider = "views",
+ *   provider = "viewsreference",
  *   arguments={
  *     "filter" = {
  *       "optional" = true,
- *       "type" = "Untyped"
+ *       "type" = "ViewsFilterInput"
  *     },
  *     "offset" = {
  *       "optional" = true,
@@ -38,7 +38,7 @@ use GraphQL\Type\Definition\ResolveInfo;
  *     },
  *     "sortBy" = {
  *       "optional" = true,
- *       "type" = "Untyped"
+ *       "type" = "ViewsSortByInput"
  *     },
  *     "sortDirection" = {
  *       "optional" = true,
@@ -47,7 +47,7 @@ use GraphQL\Type\Definition\ResolveInfo;
  *     },
  *     "contextualFilter" = {
  *       "optional" = true,
- *       "type" = "Untyped"
+ *       "type" = "ViewsContextualFilterInput"
  *     }
  *   },
  *   deriver = "Drupal\graphql_core\Plugin\Deriver\Fields\EntityFieldPropertyDeriver"
@@ -78,6 +78,9 @@ class ViewDerivative extends View {
    *
    * @param mixed $value
    *   The current object value.
+   *
+   * @return array|mixed
+   *   Return unserialized data.
    */
   protected function getViewReferenceConfiguration($value) {
     $values = $value->getValue();
