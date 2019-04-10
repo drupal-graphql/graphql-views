@@ -70,7 +70,7 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
       $executable->setDisplay($definition['display']);
 
       // Set view contextual filters.
-      /* @see \Drupal\graphql_core\Plugin\Deriver\ViewDeriverBase::getArgumentsInfo() */
+      /* @see \Drupal\graphql_views\ViewDeriverHelperTrait::getArgumentsInfo() */
       if (!empty($definition['arguments_info'])) {
         $arguments = $this->extractContextualFilters($value, $args);
         $executable->setArguments($arguments);
@@ -90,6 +90,10 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
         // Set paging parameters.
         $executable->setItemsPerPage($args['pageSize']);
         $executable->setCurrentPage($args['page']);
+      }
+
+      if (isset($args['offset']) && !empty($args['offset'])) {
+        $executable->setOffset($args['offset']);
       }
 
       $result = $executable->render($definition['display']);
