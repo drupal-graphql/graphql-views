@@ -2,13 +2,12 @@
 
 namespace Drupal\Tests\graphql_views\Kernel;
 
-use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
-use Drupal\simpletest\ContentTypeCreationTrait;
-use Drupal\simpletest\NodeCreationTrait;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\user\Entity\Role;
+use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
 use Drupal\Tests\graphql_core\Kernel\GraphQLContentTestBase;
+use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
 
 /**
