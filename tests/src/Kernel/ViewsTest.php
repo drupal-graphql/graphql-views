@@ -43,7 +43,7 @@ class ViewsTest extends ViewsTestBase {
       'node:2',
       'node:3',
       'node_list',
-    ]));
+    ])->addCacheContexts(['user']));
   }
 
   /**
@@ -90,7 +90,7 @@ class ViewsTest extends ViewsTestBase {
       'node:8',
       'node:9',
       'node_list',
-    ]));
+    ])->addCacheContexts(['user']));
   }
 
   /**
@@ -145,7 +145,7 @@ class ViewsTest extends ViewsTestBase {
       'node:8',
       'node:9',
       'node_list',
-    ]));
+    ])->addCacheContexts(['user']));
   }
 
   /**
@@ -177,7 +177,7 @@ GQL;
       'node:4',
       'node:7',
       'node_list',
-    ]));
+    ])->addCacheContexts(['user']));
   }
 
   /**
@@ -214,7 +214,7 @@ GQL;
       'node:8',
       'node_list',
 
-    ]));
+    ])->addCacheContexts(['user']));
   }
 
   /**
@@ -256,7 +256,7 @@ GQL;
       'node:8',
       'node:9',
       'node_list',
-    ]));
+    ])->addCacheContexts(['user']));
   }
 
   /**
