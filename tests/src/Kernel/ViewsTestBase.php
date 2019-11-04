@@ -8,7 +8,6 @@ use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
 use Drupal\Tests\graphql_core\Kernel\GraphQLContentTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
-use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
 
 /**
  * Base class for test views support in GraphQL.
@@ -19,7 +18,6 @@ abstract class ViewsTestBase extends GraphQLContentTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
   use EntityReferenceTestTrait;
-  use TaxonomyTestTrait;
 
   /**
    * {@inheritdoc}
