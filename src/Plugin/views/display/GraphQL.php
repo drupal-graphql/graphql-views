@@ -84,6 +84,11 @@ class GraphQL extends DisplayPluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
 
+    // Allow to attach the view to entity types / bundles.
+    // Similar to the EVA module.
+    $options['entity_type']['default'] = '';
+    $options['bundles']['default'] = [];
+
     // Set the default plugins to 'graphql'.
     $options['style']['contains']['type']['default'] = 'graphql';
     $options['exposed_form']['contains']['type']['default'] = 'graphql';
@@ -206,6 +211,30 @@ class GraphQL extends DisplayPluginBase {
       'title' => $this->t('Query name'),
       'value' => views_ui_truncate($this->getGraphQLQueryName(), 24),
     ];
+
+    if ($entity_type = $this->getOption('entity_type')) {
+      $entity_info = \Drupal::entityManager()->getDefinition($entity_type);
+      $type_name = $entity_info->get('label');
+
+      $bundle_names = [];
+      $bundle_info = \Drupal::entityManager()->getBundleInfo($entity_type);
+      foreach ($this->getOption('bundles') as $bundle) {
+        $bundle_names[] = $bundle_info[$bundle]['label'];
+      }
+    }
+
+    $options['entity_type'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Entity type'),
+      'value' => empty($type_name) ? $this->t('None') : $type_name,
+    ];
+
+    $options['bundles'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Bundles'),
+      'value' => empty($bundle_names) ? $this->t('All') : implode(', ', $bundle_names),
+    ];
+
   }
 
   /**
@@ -223,6 +252,41 @@ class GraphQL extends DisplayPluginBase {
           '#default_value' => $this->getGraphQLQueryName(),
         ];
         break;
+
+      case 'entity_type':
+        $entity_info = \Drupal::entityManager()->getDefinitions();
+        $entity_names = [NULL => $this->t('None')];
+        foreach ($entity_info as $type => $info) {
+          // is this a content/front-facing entity?
+          if ($info instanceof \Drupal\Core\Entity\ContentEntityType) {
+            $entity_names[$type] = $info->get('label');
+          }
+        }
+
+        $form['#title'] .= $this->t('Entity type');
+        $form['entity_type'] = [
+          '#type' => 'radios',
+          '#required' => FALSE,
+          '#title' => $this->t('Attach this display to the following entity type'),
+          '#options' => $entity_names,
+          '#default_value' => $this->getOption('entity_type'),
+        ];
+        break;
+
+      case 'bundles':
+        $options = [];
+        $entity_type = $this->getOption('entity_type');
+        foreach (\Drupal::entityManager()->getBundleInfo($entity_type) as $bundle => $info) {
+          $options[$bundle] = $info['label'];
+        }
+        $form['#title'] .= $this->t('Bundles');
+        $form['bundles'] = [
+          '#type' => 'checkboxes',
+          '#title' => $this->t('Attach this display to the following bundles.  If no bundles are selected, the display will be attached to all.'),
+          '#options' => $options,
+          '#default_value' => $this->getOption('bundles'),
+        ];
+        break;
     }
   }
 
@@ -235,6 +299,27 @@ class GraphQL extends DisplayPluginBase {
     switch ($section) {
       case 'graphql_query_name':
         $this->setOption($section, $form_state->getValue($section));
+        break;
+      case 'entity_type':
+        $new_entity = $form_state->getValue('entity_type');
+        $old_entity = $this->getOption('entity_type');
+        $this->setOption('entity_type', $new_entity);
+
+        if ($new_entity != $old_entity) {
+          // Each entity has its own list of bundles and view modes. If there's
+          // only one on the new type, we can select it automatically. Otherwise
+          // we need to wipe the options and start over.
+          $new_entity_info = \Drupal::entityManager()->getDefinition($new_entity);
+          $new_bundles_keys = \Drupal::entityManager()->getBundleInfo($new_entity);
+          $new_bundles = array();
+          if (count($new_bundles_keys) == 1) {
+            $new_bundles[] = $new_bundles_keys[0];
+          }
+          $this->setOption('bundles', $new_bundles);
+        }
+        break;
+      case 'bundles':
+        $this->setOption('bundles', array_values(array_filter($form_state->getValue('bundles'))));
         break;
     }
   }

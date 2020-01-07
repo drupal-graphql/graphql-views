@@ -3,7 +3,9 @@
 namespace Drupal\graphql_views\Plugin\Deriver\Fields;
 
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\graphql\Utility\StringHelper;
 use Drupal\graphql_views\Plugin\Deriver\ViewDeriverBase;
+use Drupal\views\Plugin\views\display\DisplayPluginInterface;
 use Drupal\views\Views;
 
 /**
@@ -35,7 +37,7 @@ class ViewDeriver extends ViewDeriverBase implements ContainerDeriverInterface {
         $arguments += $this->getPagerArguments($display);
         $arguments += $this->getSortArguments($display, $id);
         $arguments += $this->getFilterArguments($display, $id);
-        $types = $this->getTypes($info);
+        $types = $this->getTypes($display, $info);
 
         $this->derivatives[$id] = [
           'id' => $id,
