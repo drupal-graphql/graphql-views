@@ -2,6 +2,7 @@
 
 namespace Drupal\graphql_views\Plugin\GraphQL\Fields;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -72,10 +73,20 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
       // Set view contextual filters.
       /* @see \Drupal\graphql_views\ViewDeriverHelperTrait::getArgumentsInfo() */
       if (!empty($definition['arguments_info'])) {
-        $arguments = $this->extractContextualFilters($value, $args);
+        $arguments = $this->extractContextualFilters($value, $args, $executable);
         $executable->setArguments($arguments);
       }
-
+      // See if we can fetch the pageSize from the context.
+      $limit_mode = $executable->getDisplay()->getOption('limit_mode');
+      if ($limit_mode == 'token') {
+        if (($token_string = $executable->getDisplay()->getOption('default_limit')) && ($entity_type = $executable->getDisplay()->getOption('entity_type'))) {
+          $token_handler = \Drupal::service('graphql_views.token_handler');
+          // Now do the token replacement.
+          if (($pageSizeValue = current($token_handler->getArgumentsFromTokenString($token_string, $entity_type, $value))) && is_numeric($pageSizeValue)) {
+              $executable->setItemsPerPage((int) $pageSizeValue);
+          }
+        }
+      }
       $filters = $executable->getDisplay()->getOption('filters');;
       $input = $this->extractExposedInput($value, $args, $filters);
       $executable->setExposedInput($input);
@@ -126,14 +137,36 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
    *   The resolved parent value.
    * @param $args
    *   The arguments provided to the field.
+   * @param \Drupal\views\ViewExecutable $executable
+   *   The view to execute.
    *
    * @return array
    *   An array of arguments containing the contextual filter value from the
    *   parent or provided args if any.
    */
-  protected function extractContextualFilters($value, $args) {
+  protected function extractContextualFilters($value, $args, $executable) {
     $definition = $this->getPluginDefinition();
     $arguments = [];
+
+    // See if we can fetch the default arguments using the context.
+    $arg_mode = $executable->getDisplay()->getOption('argument_mode');
+
+    if ($arg_mode == 'token') {
+      if (($token_string = $executable->getDisplay()->getOption('default_argument')) && ($entity_type = $executable->getDisplay()->getOption('entity_type'))) {
+        $token_handler = \Drupal::service('graphql_views.token_handler');
+        // Now do the token replacement.
+        $token_values = $token_handler->getArgumentsFromTokenString($token_string, $entity_type, $value);
+        $new_args = [];
+        // We have to be careful to only replace arguments that have
+        // tokens.
+        foreach ($token_values as $key => $value) {
+          $new_args[Html::escape($key)] = Html::escape($value);
+        }
+
+        //$view->args = $new_args;
+        $arguments = $new_args;
+      }
+    }
 
     foreach ($definition['arguments_info'] as $argumentId => $argumentInfo) {
       if (isset($args['contextualFilter'][$argumentId])) {
@@ -147,7 +180,7 @@ class View extends FieldPluginBase implements ContainerFactoryPluginInterface {
       ) {
         $arguments[$argumentInfo['index']] = $value->id();
       }
-      else {
+      elseif (!isset($arguments[$argumentInfo['index']])) {
         $arguments[$argumentInfo['index']] = NULL;
       }
     }

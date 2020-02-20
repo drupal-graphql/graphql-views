@@ -7,6 +7,7 @@
 
 namespace Drupal\graphql_views\Plugin\views\display;
 
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\graphql\Utility\StringHelper;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
@@ -88,6 +89,12 @@ class GraphQL extends DisplayPluginBase {
     // Similar to the EVA module.
     $options['entity_type']['default'] = '';
     $options['bundles']['default'] = [];
+    // Allow to manually provide arguments or using tokens.
+    $options['argument_mode']['default'] = 'none';
+    $options['default_argument']['default'] = '';
+    // Allow to manually provide limit or using tokens.
+    $options['limit_mode']['default'] = 'none';
+    $options['default_limit']['default'] = '';
 
     // Set the default plugins to 'graphql'.
     $options['style']['contains']['type']['default'] = 'graphql';
@@ -235,6 +242,20 @@ class GraphQL extends DisplayPluginBase {
       'value' => empty($bundle_names) ? $this->t('All') : implode(', ', $bundle_names),
     ];
 
+    $argument_mode = $this->getOption('argument_mode');
+    $options['arguments'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Arguments'),
+      'value' => empty($argument_mode) ? $this->t('GraphqlQuery') : \Drupal\Component\Utility\Html::escape($argument_mode),
+    ];
+
+    $limit_mode = $this->getOption('limit_mode');
+    $options['limit'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Limit'),
+      'value' => empty($limit_mode) ? $this->t('GraphqlQuery') : \Drupal\Component\Utility\Html::escape($limit_mode),
+    ];
+
   }
 
   /**
@@ -287,6 +308,108 @@ class GraphQL extends DisplayPluginBase {
           '#default_value' => $this->getOption('bundles'),
         ];
         break;
+
+      case 'arguments':
+        $form['#title'] .= $this->t('Arguments');
+        $default = $this->getOption('argument_mode');
+        $options = [
+          'None' => $this->t("No special handling"),
+          'token' => $this->t("Use tokens from the entity the view is attached to"),
+        ];
+
+        $form['argument_mode'] = [
+          '#type' => 'radios',
+          '#title' => $this->t("How should this display populate the view's arguments?"),
+          '#options' => $options,
+          '#default_value' => $default,
+        ];
+
+        $form['token'] = [
+          '#type' => 'fieldset',
+          '#title' => $this->t('Token replacement'),
+          '#collapsible' => TRUE,
+          '#states' => [
+            'visible' => [
+              ':input[name=argument_mode]' => ['value' => 'token'],
+            ],
+          ],
+        ];
+
+        $form['token']['default_argument'] = [
+          '#title' => $this->t('Arguments'),
+          '#type' => 'textfield',
+          '#default_value' => $this->getOption('default_argument'),
+          '#description' => $this->t('You may use token replacement to provide arguments based on the current entity. Separate arguments with "/".'),
+        ];
+
+        // Add a token browser.
+        if (\Drupal::service('module_handler')->moduleExists('token') && $entity_type = $this->getOption('entity_type')) {
+          $token_types = [$entity_type => $entity_type];
+          $token_mapper = \Drupal::service('token.entity_mapper');
+          if (!empty($token_types)) {
+            $token_types = array_map(function ($type) use ($token_mapper) {
+              return $token_mapper->getTokenTypeForEntityType($type);
+            }, (array) $token_types);
+          }
+          $form['token']['browser'] = [
+            '#theme' => 'token_tree_link',
+            '#token_types' => $token_types,
+            '#global_types' => TRUE,
+            '#show_nested' => FALSE,
+          ];
+        }
+        break;
+
+      case 'limit':
+        $form['#title'] .= $this->t('Limit');
+        $default = $this->getOption('limit_mode');
+        $options = [
+          'None' => $this->t("No special handling"),
+          'token' => $this->t("Use tokens from the entity the view is attached to"),
+        ];
+
+        $form['limit_mode'] = [
+          '#type' => 'radios',
+          '#title' => $this->t("How should this display populate the view's result limit?"),
+          '#options' => $options,
+          '#default_value' => $default,
+        ];
+
+        $form['token'] = [
+          '#type' => 'fieldset',
+          '#title' => $this->t('Token replacement'),
+          '#collapsible' => TRUE,
+          '#states' => [
+            'visible' => [
+              ':input[name=limit_mode]' => ['value' => 'token'],
+            ],
+          ],
+        ];
+
+        $form['token']['default_limit'] = [
+          '#title' => $this->t('Limit'),
+          '#type' => 'textfield',
+          '#default_value' => $this->getOption('default_limit'),
+          '#description' => $this->t('You may use token replacement to provide the limit based on the current entity.'),
+        ];
+
+        // Add a token browser.
+        if (\Drupal::service('module_handler')->moduleExists('token') && $entity_type = $this->getOption('entity_type')) {
+          $token_types = [$entity_type => $entity_type];
+          $token_mapper = \Drupal::service('token.entity_mapper');
+          if (!empty($token_types)) {
+            $token_types = array_map(function ($type) use ($token_mapper) {
+              return $token_mapper->getTokenTypeForEntityType($type);
+            }, (array) $token_types);
+          }
+          $form['token']['browser'] = [
+            '#theme' => 'token_tree_link',
+            '#token_types' => $token_types,
+            '#global_types' => TRUE,
+            '#show_nested' => FALSE,
+          ];
+        }
+        break;
     }
   }
 
@@ -320,6 +443,24 @@ class GraphQL extends DisplayPluginBase {
         break;
       case 'bundles':
         $this->setOption('bundles', array_values(array_filter($form_state->getValue('bundles'))));
+        break;
+      case 'arguments':
+        $this->setOption('argument_mode', $form_state->getValue('argument_mode'));
+        if ($form_state->getValue('argument_mode') == 'token') {
+          $this->setOption('default_argument', $form_state->getValue('default_argument'));
+        }
+        else {
+          $this->setOption('default_argument', NULL);
+        }
+        break;
+      case 'limit':
+        $this->setOption('limit_mode', $form_state->getValue('limit_mode'));
+        if ($form_state->getValue('limit_mode') == 'token') {
+          $this->setOption('default_limit', $form_state->getValue('default_limit'));
+        }
+        else {
+          $this->setOption('default_limit', NULL);
+        }
         break;
     }
   }
