@@ -56,7 +56,7 @@ class TokenHandler {
     if (empty($args)) {
       return [];
     }
-    $args = $this->token->replace($args, [$type => $object], ['sanitize' => FALSE, 'clear' => TRUE]);
+    $args = $this->token->replace($args, [$type => $object], ['sanitize' => FALSE, 'clear' => FALSE]);
     return explode('/', $args);
   }
 
