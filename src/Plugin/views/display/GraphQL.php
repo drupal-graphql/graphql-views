@@ -338,6 +338,7 @@ class GraphQL extends DisplayPluginBase {
         $form['token']['default_argument'] = [
           '#title' => $this->t('Arguments'),
           '#type' => 'textfield',
+          '#maxlength' => 1024,
           '#default_value' => $this->getOption('default_argument'),
           '#description' => $this->t('You may use token replacement to provide arguments based on the current entity. Separate arguments with "/".'),
         ];
@@ -354,6 +355,7 @@ class GraphQL extends DisplayPluginBase {
           $form['token']['browser'] = [
             '#theme' => 'token_tree_link',
             '#token_types' => $token_types,
+            '#recursion_limit' => 5,
             '#global_types' => TRUE,
             '#show_nested' => FALSE,
           ];
@@ -389,6 +391,7 @@ class GraphQL extends DisplayPluginBase {
         $form['token']['default_limit'] = [
           '#title' => $this->t('Limit'),
           '#type' => 'textfield',
+          '#maxlength' => 1024,
           '#default_value' => $this->getOption('default_limit'),
           '#description' => $this->t('You may use token replacement to provide the limit based on the current entity.'),
         ];
@@ -405,6 +408,7 @@ class GraphQL extends DisplayPluginBase {
           $form['token']['browser'] = [
             '#theme' => 'token_tree_link',
             '#token_types' => $token_types,
+            '#recursion_limit' => 5,
             '#global_types' => TRUE,
             '#show_nested' => FALSE,
           ];
