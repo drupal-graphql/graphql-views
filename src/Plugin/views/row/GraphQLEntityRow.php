@@ -3,7 +3,7 @@
 namespace Drupal\graphql_views\Plugin\views\row;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\views\Entity\Render\EntityTranslationRenderTrait;
@@ -40,11 +40,11 @@ class GraphQLEntityRow extends RowPluginBase {
   protected $entityType;
 
   /**
-   * The entity manager.
+   * The entity type bundle info.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfo
    */
-  protected $entityManager;
+  protected $entityTypeBundleInfo;
 
   /**
    * The language manager.
@@ -56,15 +56,15 @@ class GraphQLEntityRow extends RowPluginBase {
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entityManager
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfo $entityTypeBundleInfo
    *   The entity type manager.
    * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
    *   The language manager.
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityManagerInterface $entityManager, LanguageManagerInterface $languageManager) {
+  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityTypeBundleInfo $entityTypeBundleInfo, LanguageManagerInterface $languageManager) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);
 
-    $this->entityManager = $entityManager;
+    $this->entityTypeBundleInfo = $entityTypeBundleInfo;
     $this->languageManager = $languageManager;
   }
 
@@ -76,7 +76,7 @@ class GraphQLEntityRow extends RowPluginBase {
       $configuration,
       $pluginId,
       $pluginDefinition,
-      $container->get('entity.manager'),
+      $container->get('entity_type.bundle.info'),
       $container->get('language_manager')
     );
   }
@@ -117,8 +117,8 @@ class GraphQLEntityRow extends RowPluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEntityManager() {
-    return $this->entityManager;
+  protected function getEntityTypeBundleInfo() {
+    return $this->entityTypeBundleInfo;
   }
 
   /**
