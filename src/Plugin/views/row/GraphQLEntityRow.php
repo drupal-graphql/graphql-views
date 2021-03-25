@@ -3,7 +3,9 @@
 namespace Drupal\graphql_views\Plugin\views\row;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfo;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\views\Entity\Render\EntityTranslationRenderTrait;
@@ -47,6 +49,20 @@ class GraphQLEntityRow extends RowPluginBase {
   protected $entityTypeBundleInfo;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The entity type bundle info.
+   *
+   * @var \Drupal\Core\Entity\EntityRepository
+   */
+  protected $entityRepository;
+
+  /**
    * The language manager.
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface
@@ -61,11 +77,13 @@ class GraphQLEntityRow extends RowPluginBase {
    * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
    *   The language manager.
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityTypeBundleInfo $entityTypeBundleInfo, LanguageManagerInterface $languageManager) {
+  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityTypeBundleInfo $entityTypeBundleInfo, LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager, EntityRepositoryInterface $entityRepository) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);
 
     $this->entityTypeBundleInfo = $entityTypeBundleInfo;
     $this->languageManager = $languageManager;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -77,7 +95,9 @@ class GraphQLEntityRow extends RowPluginBase {
       $pluginId,
       $pluginDefinition,
       $container->get('entity_type.bundle.info'),
-      $container->get('language_manager')
+      $container->get('language_manager'),
+      $container->get('entity_type.manager'),
+      $container->get('entity.repository')
     );
   }
 
@@ -101,6 +121,20 @@ class GraphQLEntityRow extends RowPluginBase {
     }
 
     return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityTypeManager() {
+    return $this->entityTypeManager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityRepository() {
+    return $this->entityRepository;
   }
 
   /**
