@@ -2,9 +2,7 @@ name: GraphQL Views
 type: module
 description: 'Adds support for views.'
 package: GraphQL
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8.9 || ^9
 dependencies:
-  - graphql:graphql_core
+  - drupal:graphql
   - drupal:views
-  - drupal:system (>=8.4)

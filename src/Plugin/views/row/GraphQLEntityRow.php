@@ -4,7 +4,6 @@ namespace Drupal\graphql_views\Plugin\views\row;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -35,18 +34,11 @@ class GraphQLEntityRow extends RowPluginBase {
   protected $usesOptions = FALSE;
 
   /**
-   * Contains the entity type of this row plugin instance.
+   * The language manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeInterface
+   * @var \Drupal\Core\Language\LanguageManagerInterface
    */
-  protected $entityType;
-
-  /**
-   * The entity type bundle info.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeBundleInfo
-   */
-  protected $entityTypeBundleInfo;
+  protected $languageManager;
 
   /**
    * The entity type manager.
@@ -63,42 +55,44 @@ class GraphQLEntityRow extends RowPluginBase {
   protected $entityRepository;
 
   /**
-   * The language manager.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected $languageManager;
-
-  /**
-   * {@inheritdoc}
-   *
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfo $entityTypeBundleInfo
-   *   The entity type manager.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
-   *   The language manager.
-   */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, EntityTypeBundleInfo $entityTypeBundleInfo, LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager, EntityRepositoryInterface $entityRepository) {
-    parent::__construct($configuration, $pluginId, $pluginDefinition);
-
-    $this->entityTypeBundleInfo = $entityTypeBundleInfo;
-    $this->languageManager = $languageManager;
-    $this->entityTypeManager = $entityTypeManager;
-    $this->entityRepository = $entityRepository;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $pluginId, $pluginDefinition) {
-    return new static(
-      $configuration,
-      $pluginId,
-      $pluginDefinition,
-      $container->get('entity_type.bundle.info'),
-      $container->get('language_manager'),
-      $container->get('entity_type.manager'),
-      $container->get('entity.repository')
-    );
+    $plugin = parent::create($container, $configuration, $pluginId, $pluginDefinition);
+    $plugin->setLanguageManager($container->get('language_manager'));
+    $plugin->setEntityTypeManager($container->get('entity_type.manager'));
+    $plugin->setEntityRepository($container->get('entity.repository'));
+    return $plugin;
+  }
+
+  /**
+   * Set the language manager.
+   *
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager.
+   */
+  protected function setLanguageManager(LanguageManagerInterface $languageManager) {
+    $this->languageManager = $languageManager;
+  }
+
+  /**
+   * Set the entity type manager.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   */
+  protected function setEntityTypeManager(EntityTypeManagerInterface $entityTypeManager) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
+
+  /**
+   * Set the entity repository.
+   *
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entityRepository
+   *   The entity repository.
+   */
+  protected function setEntityRepository(EntityRepositoryInterface $entityRepository) {
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -126,20 +120,6 @@ class GraphQLEntityRow extends RowPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getEntityTypeManager() {
-    return $this->entityTypeManager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEntityRepository() {
-    return $this->entityRepository;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getEntityTypeId() {
     if ($entityType = $this->view->getBaseEntityType()) {
       return $entityType->id();
@@ -151,15 +131,22 @@ class GraphQLEntityRow extends RowPluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEntityTypeBundleInfo() {
-    return $this->entityTypeBundleInfo;
+  protected function getLanguageManager() {
+    return $this->languageManager;
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getLanguageManager() {
-    return $this->languageManager;
+  protected function getEntityTypeManager() {
+    return $this->entityTypeManager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEntityRepository() {
+    return $this->entityRepository;
   }
 
   /**
