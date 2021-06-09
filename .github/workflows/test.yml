@@ -2,9 +2,6 @@ name: Run module tests
 
 on:
   pull_request:
-    branches:
-      - 8.x-[1-9]+.x
-      - [1-9]+.x
     paths-ignore:
       - '**.md'
 
