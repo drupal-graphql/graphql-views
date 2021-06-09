@@ -1,7 +1,3 @@
 views.display.graphql:
   type: views_display
   label: 'GraphQL display options'
-  mapping:
-    graphql_query_name:
-      type: string
-      label: 'GraphQL query name'
