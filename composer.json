@@ -1,8 +1,11 @@
 {
-  "name": "drupal/graphql_views",
-  "type": "drupal-module",
-  "description": "Exposes your Drupal Views data model through a GraphQL schema.",
-  "homepage": "http://drupal.org/project/graphql_views",
-  "license": "GPL-2.0+",
-  "minimum-stability": "dev"
+    "name": "drupal/graphql_views",
+    "type": "drupal-module",
+    "description": "Exposes your Drupal Views data model through a GraphQL schema.",
+    "homepage": "http://drupal.org/project/graphql_views",
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev",
+    "require": {
+        "drupal/graphql": "^4.1"
+    }
 }

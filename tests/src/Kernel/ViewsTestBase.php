@@ -5,7 +5,7 @@ namespace Drupal\Tests\graphql_views\Kernel;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
-use Drupal\Tests\graphql_core\Kernel\GraphQLContentTestBase;
+use Drupal\Tests\graphql\Kernel\GraphQLTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
 
@@ -14,7 +14,7 @@ use Drupal\Tests\node\Traits\NodeCreationTrait;
  *
  * @group graphql_views
  */
-abstract class ViewsTestBase extends GraphQLContentTestBase {
+abstract class ViewsTestBase extends GraphQLTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
   use EntityReferenceTestTrait;
@@ -22,14 +22,11 @@ abstract class ViewsTestBase extends GraphQLContentTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
-    'node',
-    'field',
+  protected static $modules = [
     'filter',
     'text',
     'views',
     'taxonomy',
-    'graphql_core',
     'graphql_views',
     'graphql_views_test',
   ];
@@ -44,11 +41,12 @@ abstract class ViewsTestBase extends GraphQLContentTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('view');
     $this->installEntitySchema('taxonomy_term');
     $this->installConfig(['node', 'filter', 'views', 'graphql_views_test']);
+    $this->createContentType(['type' => 'test']);
     $this->createEntityReferenceField('node', 'test', 'field_tags', 'Tags', 'taxonomy_term');
 
     Vocabulary::create([
@@ -76,13 +74,14 @@ abstract class ViewsTestBase extends GraphQLContentTestBase {
     ]);
     $terms['C']->save();
 
-    foreach ($this->letters as $index => $letter) {
+    foreach ($this->letters as $letter) {
       $this->createNode([
         'title' => 'Node ' . $letter,
         'type' => 'test',
         'field_tags' => $terms[$letter],
       ])->save();
     }
+
   }
 
 }

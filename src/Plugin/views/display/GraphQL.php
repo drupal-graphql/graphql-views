@@ -1,16 +1,9 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\graphql\Plugin\views\display
- */
-
 namespace Drupal\graphql_views\Plugin\views\display;
 
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\graphql\Utility\StringHelper;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a display plugin for GraphQL views.
@@ -25,28 +18,29 @@ use Drupal\Core\Form\FormStateInterface;
  * )
  */
 class GraphQL extends DisplayPluginBase {
+
   /**
-   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesAJAX.
+   * {@inheritdoc}
    */
   protected $usesAJAX = FALSE;
 
   /**
-   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesPager.
+   * {@inheritdoc}
    */
   protected $usesPager = FALSE;
 
   /**
-   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesMore.
+   * {@inheritdoc}
    */
   protected $usesMore = FALSE;
 
   /**
-   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesAreas.
+   * {@inheritdoc}
    */
   protected $usesAreas = FALSE;
 
   /**
-   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesOptions.
+   * {@inheritdoc}
    */
   protected $usesOptions = TRUE;
 
@@ -93,88 +87,13 @@ class GraphQL extends DisplayPluginBase {
     $options['defaults']['default']['exposed_form'] = FALSE;
     $options['defaults']['default']['row'] = FALSE;
 
-    // Remove css/exposed form settings, as they are not used for the data display.
+    // Remove css/exposed form settings, as they are not used for the data
+    // display.
     unset($options['exposed_block']);
     unset($options['css_class']);
 
     $options['graphql_query_name'] = ['default' => ''];
     return $options;
-  }
-
-  /**
-   * Get the user defined query name or the default one.
-   *
-   * @return string
-   *   Query name.
-   */
-  public function getGraphQLQueryName() {
-    return $this->getGraphQLName();
-  }
-
-  /**
-   * Gets the result name.
-   *
-   * @return string
-   *   Result name.
-   */
-  public function getGraphQLResultName() {
-    return $this->getGraphQLName('result', TRUE);
-  }
-
-  /**
-   * Gets the row name.
-   *
-   * @return string
-   *   Row name.
-   */
-  public function getGraphQLRowName() {
-    return $this->getGraphQLName('row', TRUE);
-  }
-
-  /**
-   * Gets the filter input name..
-   *
-   * @return string
-   *   Result name.
-   */
-  public function getGraphQLFilterInputName() {
-    return $this->getGraphQLName('filter_input', TRUE);
-  }
-
-  /**
-   * Gets the contextual filter input name.
-   *
-   * @return string
-   *   Result name.
-   */
-  public function getGraphQLContextualFilterInputName() {
-    return $this->getGraphQLName('contextual_filter_input', TRUE);
-  }
-
-  /**
-   * Returns the formatted name.
-   *
-   * @param string|null $suffix
-   *   Id suffix, eg. row, result.
-   * @param bool $type
-   *   Whether to use camel- or snake case. Uses camel case if TRUE. Defaults to
-   *   FALSE.
-   *
-   * @return string The id.
-   *   The id.
-   */
-  public function getGraphQLName($suffix = NULL, $type = FALSE) {
-    $queryName = strip_tags($this->getOption('graphql_query_name'));
-
-    if (empty($queryName)) {
-      $viewId = $this->view->id();
-      $displayId = $this->display['id'];
-      $parts = [$viewId, $displayId, 'view', $suffix];
-      return $type ? call_user_func_array([StringHelper::class, 'camelCase'], $parts) : call_user_func_array([StringHelper::class, 'propCase'], $parts);
-    }
-
-    $parts = array_filter([$queryName, $suffix]);
-    return $type ? call_user_func_array([StringHelper::class, 'camelCase'], $parts) : call_user_func_array([StringHelper::class, 'propCase'], $parts);
   }
 
   /**
@@ -200,43 +119,6 @@ class GraphQL extends DisplayPluginBase {
         '#weight' => -10,
       ],
     ];
-
-    $options['graphql_query_name'] = [
-      'category' => 'graphql',
-      'title' => $this->t('Query name'),
-      'value' => views_ui_truncate($this->getGraphQLQueryName(), 24),
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
-    parent::buildOptionsForm($form, $form_state);
-
-    switch ($form_state->get('section')) {
-      case 'graphql_query_name':
-        $form['#title'] .= $this->t('Query name');
-        $form['graphql_query_name'] = [
-          '#type' => 'textfield',
-          '#description' => $this->t('This will be the graphQL query name.'),
-          '#default_value' => $this->getGraphQLQueryName(),
-        ];
-        break;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitOptionsForm(&$form, FormStateInterface $form_state) {
-    parent::submitOptionsForm($form, $form_state);
-    $section = $form_state->get('section');
-    switch ($section) {
-      case 'graphql_query_name':
-        $this->setOption($section, $form_state->getValue($section));
-        break;
-    }
   }
 
   /**
@@ -262,4 +144,5 @@ class GraphQL extends DisplayPluginBase {
       'cache' => CacheableMetadata::createFromRenderArray($this->view->element),
     ];
   }
+
 }

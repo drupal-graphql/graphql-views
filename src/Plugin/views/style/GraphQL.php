@@ -49,4 +49,5 @@ class GraphQL extends StylePluginBase {
 
     return $rows;
   }
+
 }

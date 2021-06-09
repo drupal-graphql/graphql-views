@@ -26,4 +26,5 @@ class GraphQL extends ExposedFormPluginBase {
 
     return NULL;
   }
+
 }
