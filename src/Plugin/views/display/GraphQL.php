@@ -2,6 +2,7 @@
 
 namespace Drupal\graphql_views\Plugin\views\display;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 
 /**
@@ -137,7 +138,11 @@ class GraphQL extends DisplayPluginBase {
     // cache render array so we have to transform it back afterwards.
     $this->applyDisplayCacheabilityMetadata($this->view->element);
 
-    return $rows;
+    return [
+      'view' => $this->view,
+      'rows' => $rows,
+      'cache' => CacheableMetadata::createFromRenderArray($this->view->element),
+    ];
   }
 
 }

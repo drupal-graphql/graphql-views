@@ -1,0 +1,7 @@
+{
+  graphqlTestSimpleView {
+    results {
+      entityLabel
+    }
+  }
+}
