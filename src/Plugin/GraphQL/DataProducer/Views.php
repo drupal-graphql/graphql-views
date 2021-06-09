@@ -92,6 +92,14 @@ class Views extends DataProducerPluginBase implements ContainerFactoryPluginInte
    *   Number of items on page.
    * @param int|null $page
    *   Number of page.
+   * @param string $sort_by
+   *   Fields to sort by.
+   * @param string $sort_direction
+   *   Direction to sort. ASC or DESC.
+   * @param array $filter
+   *   Exposed filters.
+   * @param \Drupal\graphql\GraphQL\Execution\FieldContext $fieldContext
+   *   Context to set cache on.
    *
    * @return array|null
    *   List of entities.
@@ -99,7 +107,7 @@ class Views extends DataProducerPluginBase implements ContainerFactoryPluginInte
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function resolve(string $view_id, string $display_id, int $offset = NULL, int $page_size = NULL, int $page = NULL, string $sort_by = NULL, string $sort_direction = NULL, array $filter = [], FieldContext $fieldContext) {
+  public function resolve(string $view_id, string $display_id, $offset, $page_size, $page, $sort_by, $sort_direction, array $filter, FieldContext $fieldContext) {
 
     /** @var \Drupal\views\Entity\View $view */
     $view = \Drupal::entityTypeManager()->getStorage('view')->load($view_id);
@@ -137,7 +145,6 @@ class Views extends DataProducerPluginBase implements ContainerFactoryPluginInte
     $executable->execute();
 
     $result = $executable->render($display_id);
-
 
     /** @var \Drupal\Core\Cache\CacheableMetadata $cache */
     if ($cache = $result['cache']) {
@@ -210,17 +217,19 @@ class Views extends DataProducerPluginBase implements ContainerFactoryPluginInte
   /**
    * Retrieves sort and filter arguments from the provided field args.
    *
-   * @param $value
-   *   The resolved parent value.
-   * @param $args
-   *   The array of arguments provided to the field.
-   * @param $available_filters
+   * @param string $sort_by
+   *   Fields to sort by.
+   * @param string $sort_direction
+   *   Direction to sort. ASC or DESC.
+   * @param array $filter
+   *   Exposed filters.
+   * @param array $available_filters
    *   The available filters for the configured view.
    *
    * @return array
    *   The array of sort and filter arguments to execute the view with.
    */
-  protected function extractExposedInput($sort_by, $sort_direction, $filter, $available_filters) {
+  protected function extractExposedInput($sort_by, $sort_direction, array $filter, array $available_filters) {
     // Prepare arguments for use as exposed form input.
     $input = array_filter([
       // Sorting arguments.
@@ -238,7 +247,8 @@ class Views extends DataProducerPluginBase implements ContainerFactoryPluginInte
       $inputKey = $filterRow['expose']['identifier'];
       if (!isset($filter[$inputKey])) {
         $input[$inputKey] = $filterRow['value'];
-      } else {
+      }
+      else {
         $input[$inputKey] = $filter[$inputKey];
       }
     }

@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * @file
+ * Hook implementations.
+ */
+
 use Drupal\views\ViewExecutable;
 
+/**
+ * Implements hook_views_pre_build().
+ */
 function graphql_views_test_views_pre_build(ViewExecutable $view) {
   $args =& drupal_static('graphql_views_test:view:args', []);
   $id = $view->storage->id() . ':' . $view->current_display;
