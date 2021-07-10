@@ -117,7 +117,17 @@ trait ViewDeriverHelperTrait {
    * @return array
    *   An array of additional types the view can be embedded in.
    */
-  protected function getTypes(array $arguments, array $types = ['Root']) {
+  protected function getTypes(DisplayPluginInterface $display, array $arguments, array $types = ['Root']) {
+
+    if (($entity_type = $display->getOption('entity_type'))) {
+      $types = array_merge($types, [StringHelper::camelCase($entity_type)]);
+
+      if (($bundles = $display->getOption('bundles'))) {
+        $types = array_merge($types, array_map(function ($bundle) use ($entity_type) {
+          return StringHelper::camelCase($entity_type, $bundle);
+        }, $bundles));
+      }
+    }
 
     if (empty($arguments)) {
       return $types;

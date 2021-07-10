@@ -7,6 +7,7 @@
 
 namespace Drupal\graphql_views\Plugin\views\display;
 
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\graphql\Utility\StringHelper;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
@@ -83,6 +84,17 @@ class GraphQL extends DisplayPluginBase {
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
+
+    // Allow to attach the view to entity types / bundles.
+    // Similar to the EVA module.
+    $options['entity_type']['default'] = '';
+    $options['bundles']['default'] = [];
+    // Allow to manually provide arguments or using tokens.
+    $options['argument_mode']['default'] = 'none';
+    $options['default_argument']['default'] = '';
+    // Allow to manually provide limit or using tokens.
+    $options['limit_mode']['default'] = 'none';
+    $options['default_limit']['default'] = '';
 
     // Set the default plugins to 'graphql'.
     $options['style']['contains']['type']['default'] = 'graphql';
@@ -206,6 +218,44 @@ class GraphQL extends DisplayPluginBase {
       'title' => $this->t('Query name'),
       'value' => views_ui_truncate($this->getGraphQLQueryName(), 24),
     ];
+
+    if ($entity_type = $this->getOption('entity_type')) {
+      $entity_info = \Drupal::entityManager()->getDefinition($entity_type);
+      $type_name = $entity_info->get('label');
+
+      $bundle_names = [];
+      $bundle_info = \Drupal::entityManager()->getBundleInfo($entity_type);
+      foreach ($this->getOption('bundles') as $bundle) {
+        $bundle_names[] = $bundle_info[$bundle]['label'];
+      }
+    }
+
+    $options['entity_type'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Entity type'),
+      'value' => empty($type_name) ? $this->t('None') : $type_name,
+    ];
+
+    $options['bundles'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Bundles'),
+      'value' => empty($bundle_names) ? $this->t('All') : implode(', ', $bundle_names),
+    ];
+
+    $argument_mode = $this->getOption('argument_mode');
+    $options['arguments'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Arguments'),
+      'value' => empty($argument_mode) ? $this->t('GraphqlQuery') : \Drupal\Component\Utility\Html::escape($argument_mode),
+    ];
+
+    $limit_mode = $this->getOption('limit_mode');
+    $options['limit'] = [
+      'category' => 'graphql',
+      'title' => $this->t('Limit'),
+      'value' => empty($limit_mode) ? $this->t('GraphqlQuery') : \Drupal\Component\Utility\Html::escape($limit_mode),
+    ];
+
   }
 
   /**
@@ -223,6 +273,147 @@ class GraphQL extends DisplayPluginBase {
           '#default_value' => $this->getGraphQLQueryName(),
         ];
         break;
+
+      case 'entity_type':
+        $entity_info = \Drupal::entityManager()->getDefinitions();
+        $entity_names = [NULL => $this->t('None')];
+        foreach ($entity_info as $type => $info) {
+          // is this a content/front-facing entity?
+          if ($info instanceof \Drupal\Core\Entity\ContentEntityType) {
+            $entity_names[$type] = $info->get('label');
+          }
+        }
+
+        $form['#title'] .= $this->t('Entity type');
+        $form['entity_type'] = [
+          '#type' => 'radios',
+          '#required' => FALSE,
+          '#title' => $this->t('Attach this display to the following entity type'),
+          '#options' => $entity_names,
+          '#default_value' => $this->getOption('entity_type'),
+        ];
+        break;
+
+      case 'bundles':
+        $options = [];
+        $entity_type = $this->getOption('entity_type');
+        foreach (\Drupal::entityManager()->getBundleInfo($entity_type) as $bundle => $info) {
+          $options[$bundle] = $info['label'];
+        }
+        $form['#title'] .= $this->t('Bundles');
+        $form['bundles'] = [
+          '#type' => 'checkboxes',
+          '#title' => $this->t('Attach this display to the following bundles.  If no bundles are selected, the display will be attached to all.'),
+          '#options' => $options,
+          '#default_value' => $this->getOption('bundles'),
+        ];
+        break;
+
+      case 'arguments':
+        $form['#title'] .= $this->t('Arguments');
+        $default = $this->getOption('argument_mode');
+        $options = [
+          'None' => $this->t("No special handling"),
+          'token' => $this->t("Use tokens from the entity the view is attached to"),
+        ];
+
+        $form['argument_mode'] = [
+          '#type' => 'radios',
+          '#title' => $this->t("How should this display populate the view's arguments?"),
+          '#options' => $options,
+          '#default_value' => $default,
+        ];
+
+        $form['token'] = [
+          '#type' => 'fieldset',
+          '#title' => $this->t('Token replacement'),
+          '#collapsible' => TRUE,
+          '#states' => [
+            'visible' => [
+              ':input[name=argument_mode]' => ['value' => 'token'],
+            ],
+          ],
+        ];
+
+        $form['token']['default_argument'] = [
+          '#title' => $this->t('Arguments'),
+          '#type' => 'textfield',
+          '#maxlength' => 1024,
+          '#default_value' => $this->getOption('default_argument'),
+          '#description' => $this->t('You may use token replacement to provide arguments based on the current entity. Separate arguments with "/".'),
+        ];
+
+        // Add a token browser.
+        if (\Drupal::service('module_handler')->moduleExists('token') && $entity_type = $this->getOption('entity_type')) {
+          $token_types = [$entity_type => $entity_type];
+          $token_mapper = \Drupal::service('token.entity_mapper');
+          if (!empty($token_types)) {
+            $token_types = array_map(function ($type) use ($token_mapper) {
+              return $token_mapper->getTokenTypeForEntityType($type);
+            }, (array) $token_types);
+          }
+          $form['token']['browser'] = [
+            '#theme' => 'token_tree_link',
+            '#token_types' => $token_types,
+            '#recursion_limit' => 5,
+            '#global_types' => TRUE,
+            '#show_nested' => FALSE,
+          ];
+        }
+        break;
+
+      case 'limit':
+        $form['#title'] .= $this->t('Limit');
+        $default = $this->getOption('limit_mode');
+        $options = [
+          'None' => $this->t("No special handling"),
+          'token' => $this->t("Use tokens from the entity the view is attached to"),
+        ];
+
+        $form['limit_mode'] = [
+          '#type' => 'radios',
+          '#title' => $this->t("How should this display populate the view's result limit?"),
+          '#options' => $options,
+          '#default_value' => $default,
+        ];
+
+        $form['token'] = [
+          '#type' => 'fieldset',
+          '#title' => $this->t('Token replacement'),
+          '#collapsible' => TRUE,
+          '#states' => [
+            'visible' => [
+              ':input[name=limit_mode]' => ['value' => 'token'],
+            ],
+          ],
+        ];
+
+        $form['token']['default_limit'] = [
+          '#title' => $this->t('Limit'),
+          '#type' => 'textfield',
+          '#maxlength' => 1024,
+          '#default_value' => $this->getOption('default_limit'),
+          '#description' => $this->t('You may use token replacement to provide the limit based on the current entity.'),
+        ];
+
+        // Add a token browser.
+        if (\Drupal::service('module_handler')->moduleExists('token') && $entity_type = $this->getOption('entity_type')) {
+          $token_types = [$entity_type => $entity_type];
+          $token_mapper = \Drupal::service('token.entity_mapper');
+          if (!empty($token_types)) {
+            $token_types = array_map(function ($type) use ($token_mapper) {
+              return $token_mapper->getTokenTypeForEntityType($type);
+            }, (array) $token_types);
+          }
+          $form['token']['browser'] = [
+            '#theme' => 'token_tree_link',
+            '#token_types' => $token_types,
+            '#recursion_limit' => 5,
+            '#global_types' => TRUE,
+            '#show_nested' => FALSE,
+          ];
+        }
+        break;
     }
   }
 
@@ -235,6 +426,45 @@ class GraphQL extends DisplayPluginBase {
     switch ($section) {
       case 'graphql_query_name':
         $this->setOption($section, $form_state->getValue($section));
+        break;
+      case 'entity_type':
+        $new_entity = $form_state->getValue('entity_type');
+        $old_entity = $this->getOption('entity_type');
+        $this->setOption('entity_type', $new_entity);
+
+        if ($new_entity != $old_entity) {
+          // Each entity has its own list of bundles and view modes. If there's
+          // only one on the new type, we can select it automatically. Otherwise
+          // we need to wipe the options and start over.
+          $new_entity_info = \Drupal::entityManager()->getDefinition($new_entity);
+          $new_bundles_keys = \Drupal::entityManager()->getBundleInfo($new_entity);
+          $new_bundles = array();
+          if (count($new_bundles_keys) == 1) {
+            $new_bundles[] = $new_bundles_keys[0];
+          }
+          $this->setOption('bundles', $new_bundles);
+        }
+        break;
+      case 'bundles':
+        $this->setOption('bundles', array_values(array_filter($form_state->getValue('bundles'))));
+        break;
+      case 'arguments':
+        $this->setOption('argument_mode', $form_state->getValue('argument_mode'));
+        if ($form_state->getValue('argument_mode') == 'token') {
+          $this->setOption('default_argument', $form_state->getValue('default_argument'));
+        }
+        else {
+          $this->setOption('default_argument', NULL);
+        }
+        break;
+      case 'limit':
+        $this->setOption('limit_mode', $form_state->getValue('limit_mode'));
+        if ($form_state->getValue('limit_mode') == 'token') {
+          $this->setOption('default_limit', $form_state->getValue('default_limit'));
+        }
+        else {
+          $this->setOption('default_limit', NULL);
+        }
         break;
     }
   }

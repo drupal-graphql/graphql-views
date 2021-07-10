@@ -1,0 +1,4 @@
+services:
+  graphql_views.token_handler:
+    class: Drupal\graphql_views\TokenHandler
+    arguments: ['@token']
