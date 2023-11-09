@@ -22,7 +22,7 @@ abstract class ViewsTestBase extends GraphQLContentTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'field',
     'filter',
@@ -44,7 +44,7 @@ abstract class ViewsTestBase extends GraphQLContentTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('view');
     $this->installEntitySchema('taxonomy_term');
